@@ -1,0 +1,27 @@
+---
+title: CP Lab
+summary: A browser workspace for practicing university C exercises, with an editor, local execution, and test feedback.
+year: 2026
+role: Solo developer
+stack: [JavaScript, picoc-js, Vercel]
+repo: https://github.com/KovD3v/c-code-lab
+order: 3
+---
+
+## Practice in the browser
+
+CP Lab collects 51 exercises from the 2024–2026 Complementi di Programmazione DIAG material. Each exercise combines its statement with a C editor and execution feedback.
+
+## Running C locally
+
+The runner uses picoc-js inside the browser. Supporting files, the submitted solution, and the tester are combined before execution. Local includes and selected preprocessor constructs are normalized for the interpreter.
+
+Code is saved per exercise in localStorage, with both automatic and manual saving. Execution takes place on the user's device without a server queue.
+
+## Useful limits
+
+The interpreter supports a subset of C. Testers are manually or script-generated checks, not official DIAG tests. Exercises without a tester are identified explicitly, so missing coverage does not appear as a successful test run.
+
+## My role
+
+I developed this project independently.

@@ -1,0 +1,72 @@
+{
+	"hardware": [
+		[
+			"desktop",
+			"Mac Studio M4 Max CPU-16 GPU-40 48 GB 1TB"
+		],
+		[
+			"laptop",
+			"MacBook Pro 14\" M3 Pro 18GB"
+		],
+		[
+			"mouse",
+			"Razer Viper V2 Pro"
+		],
+		[
+			"headphones",
+			"Dyson OnTrack"
+		],
+		[
+			"keyboard",
+			"Keychron K2"
+		],
+		[
+			"display",
+			"Huawei MateView curved 34\""
+		]
+	],
+	"software": [
+		[
+			"os laptop",
+			"macOS Tahoe, 26.0.1"
+		],
+		[
+			"editor",
+			"Neovim, VSCode"
+		],
+		[
+			"terminal",
+			"Ghostty + tmux"
+		],
+		[
+			"shell",
+			"fish"
+		],
+		[
+			"browser",
+			"Helium, Zen"
+		],
+		[
+			"package manager",
+			"pnpm, bun"
+		],
+		[
+			"font",
+			"JetBrains Mono"
+		]
+	],
+	"site": [
+		[
+			"framework",
+			"Astro"
+		],
+		[
+			"fonts",
+			"IBM Plex Sans, JetBrains Mono"
+		],
+		[
+			"hosting",
+			"Vercel"
+		]
+	]
+}

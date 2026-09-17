@@ -1,0 +1,24 @@
+---
+interface Props {
+	href: string;
+	title: string;
+	description?: string;
+	meta: string;
+	tag?: string;
+	vt?: string;
+}
+const { href, title, description, meta, tag, vt } = Astro.props;
+---
+
+<a class="row" href={href}>
+	<span
+		class="row-title"
+		style={vt ? `view-transition-name: ${vt}` : undefined}>{title}</span
+	>
+	<span class="row-meta">
+		{tag && <span class="label">{tag}</span>}
+		<span>{meta}</span>
+		<span class="row-arrow" aria-hidden="true">→</span>
+	</span>
+	{description && <span class="row-desc">{description}</span>}
+</a>

@@ -1,0 +1,65 @@
+---
+import { commit } from "../lib/build";
+
+interface Props {
+	scene?: string;
+	mask?: string;
+	class?: string;
+}
+const { scene = "lorenz", mask, class: cls } = Astro.props;
+---
+
+<canvas
+	class:list={["field", cls]}
+	data-scene={scene}
+	data-mask={mask}
+	data-seed={commit}
+	aria-hidden="true"></canvas>
+
+<script>
+	import { mount } from "../scripts/field/engine";
+	import { scenes } from "../scripts/field/scenes";
+
+	const valid = (s: string | null | undefined) =>
+		typeof s === "string" && (Object.hasOwn(scenes, s) || s === "off")
+			? s
+			: null;
+	const q = valid(new URLSearchParams(location.search).get("scene"));
+	let storedValue: string | null = null;
+	try {
+		storedValue = localStorage.getItem("field");
+	} catch {}
+	const stored = valid(storedValue);
+
+	for (const c of document.querySelectorAll<HTMLCanvasElement>(
+		"canvas.field[data-scene]",
+	)) {
+		const parsedSeed = Number.parseInt(c.dataset.seed ?? "0", 16);
+		const seed = Number.isFinite(parsedSeed) ? parsedSeed : 0;
+		let maskEl: Element | null = null;
+		if (c.dataset.mask) {
+			try {
+				maskEl = document.querySelector(c.dataset.mask);
+			} catch {}
+		}
+		let name = q ?? stored ?? valid(c.dataset.scene) ?? "lorenz";
+		const scene = (value: string) =>
+			value === "off" ? () => {} : scenes[value]?.(seed) ?? (() => {});
+		const handle = mount(c, {
+			scene: scene(name),
+			maskEl,
+		});
+		c.hidden = name === "off";
+		addEventListener("field:scene", (e) => {
+			const detail =
+				e instanceof CustomEvent && typeof e.detail === "string"
+					? e.detail
+					: null;
+			const next = valid(detail);
+			if (!next) return;
+			name = next;
+			c.hidden = name === "off";
+			handle.set({ scene: scene(name) });
+		});
+	}
+</script>

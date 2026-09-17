@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kovdev.me/sitemap-index.xml

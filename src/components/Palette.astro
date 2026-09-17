@@ -1,0 +1,113 @@
+---
+import { i18n } from "../lib/i18n";
+const { locale, t, href } = i18n(Astro.url);
+import { getNotes, getProjects, getLab } from "../lib/content";
+interface Props {
+	groups?: {
+		name: string;
+		kind: string;
+		items: { label: string; href?: string; action?: string }[];
+	}[];
+}
+const [notes, projects, lab] = await Promise.all([
+	getNotes(),
+	getProjects(locale),
+	getLab(),
+]);
+
+const pages = [
+	[t("home", "inizio"), "/"],
+	[t("profile", "profilo"), "/about"],
+	[t("notes", "appunti"), "/notes"],
+	[t("projects", "progetti"), "/projects"],
+	["lab", "/lab"],
+	["ASCII lab", "/lab/ascii"],
+	["Texture lab", "/lab/texture"],
+	[t("now", "ora"), "/now"],
+	[t("uses", "strumenti"), "/uses"],
+	[t("changelog", "aggiornamenti"), "/changelog"],
+];
+const scenes = ["lorenz", "donut", "cube", "wave", "contour", "noise", "off"];
+
+const groups = Astro.props.groups ?? [
+	{
+		name: t("pages", "pagine"),
+		kind: t("page", "pagina"),
+		items: pages.map(([l, h]) => ({ label: l, href: href(h) })),
+	},
+	{
+		name: t("notes", "appunti"),
+		kind: t("note", "appunto"),
+		items: notes.map((n) => ({
+			label: n.data.title + (locale === "it" ? " (in inglese)" : ""),
+			href: `/notes/${n.id}`,
+		})),
+	},
+	{
+		name: t("projects", "progetti"),
+		kind: t("project", "progetto"),
+		items: projects.map((p) => ({
+			label: p.data.title,
+			href: href(`/projects/${p.id.replace(/^it\//, "")}`),
+		})),
+	},
+	{
+		name: "lab",
+		kind: "lab",
+		items: lab.map((e) => ({ label: e.data.title, href: href(`/lab/${e.id}`) })),
+	},
+	{
+		name: t("actions", "azioni"),
+		kind: t("action", "azione"),
+		items: [
+			{ label: t("theme", "tema"), action: "theme" },
+			{ label: t("sound", "suoni"), action: "sound" },
+			{ label: t("copy email", "copia email"), action: "email" },
+			...(["/old", "/lab/field"].includes(Astro.url.pathname) ? scenes : []).map((s) => ({
+				label: `field: ${s}`,
+				action: `field:${s}`,
+			})),
+		],
+	},
+];
+---
+
+<dialog id="palette" class="palette" aria-label="Menu">
+		<input
+			type="text"
+			aria-label={t("Search pages and actions", "Cerca pagine e azioni")}
+			placeholder={t("Search or jump to\u2026", "Cerca o vai a…")}
+		autocomplete="off"
+		spellcheck="false"
+		role="combobox"
+		aria-expanded="true"
+		aria-controls="p-list"
+	/>
+	<div class="p-list" id="p-list" role="listbox">
+		{
+			groups
+				.filter((g) => g.items.length)
+				.map((g) => (
+					<div class="p-group" role="group" aria-label={g.name}>
+						<div class="p-head" aria-hidden="true">
+							{g.name}
+						</div>{" "}
+						{g.items.map((i) => (
+							<div
+								role="option"
+								class="p-item"
+								aria-label={i.label}
+								data-text={i.label}
+								data-href={"href" in i ? i.href : undefined}
+								data-action={
+									"action" in i ? i.action : undefined
+								}>
+								<span class="p-label">{i.label}</span>
+								<span class="p-kind">{g.kind}</span>
+							</div>
+						))}
+					</div>
+				))
+		}
+	</div>
+</dialog>

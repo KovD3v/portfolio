@@ -1,20 +1,33 @@
 {
-  "name": "portfolio",
-  "type": "module",
-  "version": "0.0.1",
-  "engines": {
-    "node": ">=22.12.0"
-  },
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "astro": "^7.3.1"
-  },
-  "allowScripts": {
-    "esbuild": true
-  }
+	"name": "portfolio",
+	"type": "module",
+	"version": "0.0.1",
+	"engines": {
+		"node": ">=22.12.0"
+	},
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build && prettier --write \"dist/**/*.html\" --parser html --print-width 100 --log-level warn",
+		"preview": "astro preview",
+		"check": "astro check",
+		"astro": "astro"
+	},
+	"dependencies": {
+		"@astrojs/mdx": "^8.0.0",
+		"@astrojs/rss": "^4.0.19",
+		"@astrojs/sitemap": "^3.7.4",
+		"@resvg/resvg-js": "^2.6.2",
+		"astro": "^7.3.1",
+		"satori": "^0.33.4"
+	},
+	"allowScripts": {
+		"esbuild": true
+	},
+	"devDependencies": {
+		"@astrojs/check": "^0.9.10",
+		"@fontsource/ibm-plex-sans": "^5.3.0",
+		"@fontsource/jetbrains-mono": "^5.3.0",
+		"@types/node": "^26.4.1",
+		"prettier": "^3.9.6"
+	}
 }

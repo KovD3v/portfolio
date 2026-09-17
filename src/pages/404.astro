@@ -1,0 +1,20 @@
+---
+import { i18n } from "../lib/i18n";
+const { t, href } = i18n(Astro.url);
+import Base from "../layouts/Base.astro";
+import Footer from "../components/Footer.astro";
+import { site } from "../data/site";
+---
+
+<Base title={`${t("Not found", "Pagina non trovata")} — ${site.name}`} description={t("No page at this address.", "Nessuna pagina a questo indirizzo.")}>
+	<a class="back" href={href("/")}>{t("home", "inizio")}</a>
+	<h1 class="page-title">404</h1>
+	<p class="lead">
+		{t("No page at this address. Find the other pages in the", "Nessuna pagina a questo indirizzo. Trovi le altre pagine nel")} <button
+			type="button"
+			class="link"
+			data-open-palette>menu</button
+		>.
+	</p>
+	<Footer slot="footer" />
+</Base>

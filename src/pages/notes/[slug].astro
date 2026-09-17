@@ -1,0 +1,73 @@
+---
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Footer from "../../components/Footer.astro";
+import Row from "../../components/Row.astro";
+import Progress from "../../components/Progress.astro";
+import { getNotes, noteMeta, fmtDate } from "../../lib/content";
+import { site } from "../../data/site";
+
+export async function getStaticPaths() {
+	const notes = await getNotes();
+	return notes.map((note, i) => ({
+		params: { slug: note.id },
+		props: { note, newer: notes[i - 1], older: notes[i + 1] },
+	}));
+}
+
+const { note, newer, older } = Astro.props;
+const { Content } = await render(note);
+const { title, summary, status, updated } = note.data;
+---
+
+<Base title={`${title} — ${site.name}`} description={summary}>
+	<Progress />
+	<a class="back" href="/notes">notes</a>
+
+	<header class="enter" style="--i: 0">
+		<h1 class="page-title" style={`view-transition-name: note-${note.id}`}>
+			{title}
+		</h1>
+		<p class="note-meta">
+			<span>{noteMeta(note)}</span>
+			<span class="label">{status}</span>
+		</p>
+	</header>
+
+	<article class="prose enter" style="--i: 1">
+		<Content />
+	</article>
+
+	{(updated || note.data.date) && <p class="updated">
+		{
+			updated
+				? `last updated ${fmtDate(updated)}`
+				: `published ${fmtDate(note.data.date)}`
+		}
+	</p>}
+
+	{
+		(newer || older) && (
+			<nav class="rows pager" aria-label="More notes">
+				{newer && (
+					<Row
+						href={`/notes/${newer.id}`}
+						title={newer.data.title}
+						meta={fmtDate(newer.data.date)}
+						tag="newer"
+					/>
+				)}
+				{older && (
+					<Row
+						href={`/notes/${older.id}`}
+						title={older.data.title}
+						meta={fmtDate(older.data.date)}
+						tag="older"
+					/>
+				)}
+			</nav>
+		)
+	}
+
+	<Footer slot="footer" />
+</Base>

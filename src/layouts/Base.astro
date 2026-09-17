@@ -1,0 +1,107 @@
+---
+import { i18n } from "../lib/i18n";
+const { locale, t, href } = i18n(Astro.url);
+import "../styles/global.css";
+import "../styles/v3.css";
+import Palette from "../components/Palette.astro";
+import { site } from "../data/site";
+import { artworks } from "../../public/artwork-subjects.js";
+interface Props { title: string; description: string; home?: boolean; lab?: boolean }
+const { title, description, home = false, lab = false } = Astro.props;
+const subjects = [...artworks, { id: "gyro", name: "Gyroscope", description: "A spinning rotor inside two rotating gimbals." }, { id: "leaf", name: "Leaf", description: "A gently moving leaf, traced through its veins." }];
+const italianSubjects: Record<string, [string, string]> = {
+ cpu: ["Processore", "Una vista esplosa del processore: coperchio, silicio, supporto e piedini ruotano insieme."],
+ gears: ["Ingranaggi planetari", "Una corona fissa, un ingranaggio solare e tre satelliti in rotazione."],
+ adder: ["Circuito logico", "Un sommatore a un bit attraversa gli otto ingressi possibili. I percorsi luminosi trasportano un 1."],
+ piston: ["Biella e pistone", "Una manovella rotante muove un pistone attraverso una biella di lunghezza fissa."],
+ lissajous: ["Curva di Lissajous", "Due oscillazioni in rapporto 3:2 tracciano una curva al variare della fase."],
+ sorting: ["Rete di ordinamento", "Otto valori attraversano confronti e scambi fino a essere ordinati."],
+ turing: ["Macchina di Turing", "Una testina aggiunge uno a un numero binario riscrivendo i bit fino a risolvere il riporto."],
+ tree: ["Albero binario di ricerca", "Una ricerca segue le chiavi più piccole o più grandi illuminando il percorso verso la risposta."],
+ robot: ["Braccio robotico", "Un braccio robotico traccia un otto mantenendo costante la lunghezza dei due segmenti."],
+ fourier: ["Epicicli di Fourier", "Quattro vettori rotanti sommano armoniche dispari per approssimare un'onda quadra."],
+ gyro: ["Giroscopio", "Un rotore gira all'interno di due sospensioni rotanti."],
+ leaf: ["Foglia", "Una foglia in lieve movimento, disegnata attraverso le sue venature."],
+};
+const localizedSubjects = subjects.map(subject => ({ ...subject, name: t(subject.name, italianSubjects[subject.id][0]), description: t(subject.description, italianSubjects[subject.id][1]) }));
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const path = home ? "home" : Astro.url.pathname.replace(/^\/it(?=\/|$)/, "").replace(/^\/|\/$/g, "");
+const barePath = Astro.url.pathname.replace(/^\/it(?=\/|$)/, "") || "/";
+const italianPath = barePath.startsWith("/notes/") ? "/it/notes" : `/it${barePath === "/" ? "/" : barePath}`;
+const og = new URL(`/og/${locale === "it" ? "it/" : ""}${path}.png`, Astro.site);
+---
+<!doctype html>
+<html lang={locale} data-proposal-v3 data-ascii-lab={lab || undefined} data-theme="oled" data-dark="warm" data-finish="material" data-sketch="on">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="index, follow" />
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#141210" />
+		<title>{title}</title>
+        <link rel="canonical" href={canonical} />
+        {!barePath.startsWith("/notes/") && <><link rel="alternate" hreflang="en" href={new URL(barePath, Astro.site)} /><link rel="alternate" hreflang="it" href={new URL(italianPath, Astro.site)} /></>}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonical} />
+        <meta property="og:image" content={og} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+		<link rel="icon" href="/favicon.svg" />
+		<link rel="alternate" type="application/rss+xml" title={`${site.name}: notes`} href="/rss.xml" />
+		<link rel="preload" href="/fonts/plex-sans-400.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/plex-sans-500.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/jetbrains-mono-400.woff2" as="font" type="font/woff2" crossorigin />
+		<script is:inline>
+			let saved;
+            try { saved = localStorage.getItem("appearance"); } catch {}
+            const requested = new URLSearchParams(location.search).get("appearance");
+            const appearance = ["light", "warm"].includes(requested) ? requested : saved;
+
+			document.documentElement.dataset.theme = appearance === "light" ? "light" : "oled";
+			document.documentElement.dataset.dark = "warm";
+			try {
+				if (sessionStorage.getItem("entered")) document.documentElement.dataset.entered = "";
+				else sessionStorage.setItem("entered", "1");
+			} catch {}
+		</script>
+	</head>
+	<body>
+		<div id="v3-paper" aria-hidden="true"></div>
+		<a class="skip" href="#main">{t("Skip to content", "Vai al contenuto")}</a>
+		<aside class="v3-preview" aria-label={t("Site controls", "Controlli del sito")}>
+			<a class="v3-edition" href={href("/")} >{site.name}</a>
+			<div class="v3-preview-actions">
+                <a href={locale === "it" ? barePath : italianPath} lang={locale === "it" ? "en" : "it"} aria-label={t("Read in Italian", "Leggi in inglese")}>{t("Italiano", "English")}</a>
+				<button class="v3-menu" type="button" data-open-palette>menu</button>
+<button class="theme v3-theme" type="button" aria-label={t("Toggle theme", "Cambia tema")} aria-pressed="true"><span class="v3-theme-light">{t("Light", "Chiaro")}</span><span class="v3-theme-dark">{t("Dark", "Scuro")}</span></button>
+			</div>
+		</aside>
+		{lab && <section class="v3-art-choices" aria-label={t("Choose an artwork", "Scegli uno studio")}>
+			<header class="v3-lab-heading"><h1>ASCII lab</h1><p>{t("Algorithms, mechanisms, and shapes in dots and characters. Choose a study and watch it work.", "Algoritmi, meccanismi e forme in punti e caratteri. Scegli uno studio e osservalo in movimento.")}</p></header>
+			<fieldset>
+				<legend>{t("Choose an artwork", "Scegli uno studio")}</legend>
+				<div class="v3-art-subjects">{localizedSubjects.map((subject) => <label><input type="radio" name="v3-art-choice" value={subject.id} data-description={subject.description} checked={subject.id === "robot"} />{subject.name}</label>)}</div>
+			</fieldset>
+            <div class="v3-lab-controls">
+                <label>{t("Rendering", "Resa grafica")} <select id="v3-render"><option value="dither">Dither</option><option value="characters">{t("Characters", "Caratteri")}</option><option value="halftone">Halftone</option><option value="off">{t("Off", "Disattivato")}</option></select></label>
+                <label><input id="v3-motion" type="checkbox" checked /> {t("Animate artwork", "Anima lo studio")}</label>
+            </div>
+			<div class="v3-art-caption">
+				<p id="v3-subject-description" aria-live="polite">{localizedSubjects.find(subject => subject.id === "robot")?.description}</p>
+			</div>
+		</section>}
+
+        <main id="main" class:list={["v3-main", { "v3-inner": !home && !lab }]}>
+            {(home || lab) && <canvas id="v3-art" aria-hidden="true"></canvas>}
+            <slot />
+        </main>
+        <div class:list={["v3-footer-wrap", { "v3-inner-footer": !home && !lab }]}><slot name="footer" /></div>
+        {lab && <footer class="v3-lab-footer"><a href={href("/")} >{t("Home", "Inizio")}</a><a href={href("/lab")} >{t("All experiments", "Tutti gli esperimenti")}</a><a href="https://shaders.paper.design/paper-texture">{t("Paper texture by Paper", "Texture della carta di Paper")}</a></footer>}
+		<Palette />
+		<script src="../scripts/ui.ts"></script>
+		<script is:inline type="module" src="/proposal-v3.js"></script>
+	</body>
+</html>

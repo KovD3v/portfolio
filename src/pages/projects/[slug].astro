@@ -1,0 +1,49 @@
+---
+import { i18n } from "../../lib/i18n";
+const { t, href } = i18n(Astro.url);
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Footer from "../../components/Footer.astro";
+import DataPlate from "../../components/DataPlate.astro";
+import Progress from "../../components/Progress.astro";
+import { getProjects, host } from "../../lib/content";
+import { site } from "../../data/site";
+
+export async function getStaticPaths() {
+	return (await getProjects()).map((project) => ({
+		params: { slug: project.id },
+		props: { project },
+	}));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, summary, stack, role, status, year, repo, demo } = project.data;
+
+const plate = [
+	{ label: "stack", value: stack.join(", ") },
+	...(role ? [{ label: t("role", "ruolo"), value: role }] : []),
+	...(status ? [{ label: t("status", "stato"), value: status === "wip" ? t("in development", "in sviluppo") : status, live: status === "wip" }] : []),
+	{ label: t("year", "anno"), value: String(year) },
+	...(repo ? [{ label: "repo", value: host(repo), href: repo }] : []),
+	...(demo ? [{ label: "demo", value: host(demo), href: demo }] : []),
+];
+---
+
+<Base title={`${title} — ${site.name}`} description={summary}>
+	<Progress />
+	<a class="back" href={href("/projects")} >{t("projects", "progetti")}</a>
+	<header class="enter" style="--i: 0">
+		<h1
+			class="page-title"
+			style={`view-transition-name: project-${project.id}`}>
+			{title}
+		</h1>
+		<p class="page-summary">{summary}</p>
+	</header>
+	<div class="page-plate enter" style="--i: 1">
+		<DataPlate items={plate} />
+	</div>
+	<article class="prose enter" style="--i: 2"><Content /></article>
+	<Footer slot="footer" />
+</Base>

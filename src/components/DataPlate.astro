@@ -1,0 +1,43 @@
+---
+interface Item {
+	label: string;
+	value: string;
+	href?: string;
+	progress?: number; // 0..1
+	note?: string;
+	live?: boolean;
+	clock?: string;
+	city?: string;
+}
+interface Props {
+	items: Item[];
+}
+const { items } = Astro.props;
+---
+
+<dl class="plate">
+	{
+		items.map((i) => (
+			<div class="plate-row">
+				<dt>{i.label}</dt>
+				<dd class={i.live ? "live" : undefined}>
+					<span data-clock={i.clock} data-city={i.city}>
+						{i.href ? <a href={i.href}>{i.value}</a> : i.value}
+					</span>
+					{i.note && <span class="plate-note">{i.note}</span>}
+					{typeof i.progress === "number" && (
+						<span
+							class="plate-track"
+							role="img"
+							aria-label={`${Math.round(i.progress * 100)}%`}>
+							<span
+								class="plate-fill"
+								style={`--p:${i.progress}`}
+							/>
+						</span>
+					)}
+				</dd>
+			</div>
+		))
+	}
+</dl>

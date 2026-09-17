@@ -1,0 +1,30 @@
+---
+import About from "../about.astro";
+import NotFound from "../404.astro";
+import Home from "../index.astro";
+import Now from "../now.astro";
+import Uses from "../uses.astro";
+import Changelog from "../changelog.astro";
+import Projects from "../projects/index.astro";
+import Project from "../projects/[slug].astro";
+import Notes from "../notes/index.astro";
+import Lab from "../lab/index.astro";
+import LabEntry from "../lab/[slug].astro";
+import Ascii from "../lab/ascii.astro";
+import Texture from "../lab/texture.astro";
+import { getProjects, getLab } from "../../lib/content";
+
+export async function getStaticPaths() {
+    const pages = [
+        [undefined, Home], ["about", About], ["404", NotFound], ["now", Now], ["uses", Uses], ["changelog", Changelog],
+        ["projects", Projects], ["notes", Notes], ["lab", Lab], ["lab/ascii", Ascii], ["lab/texture", Texture],
+    ] as const;
+    return [
+        ...pages.map(([path, Page]) => ({ params: { path }, props: { Page, pageProps: {} } })),
+        ...(await getProjects("it")).map(project => ({ params: { path: `projects/${project.id.replace(/^it\//, "")}` }, props: { Page: Home, pageProps: { project } } })),
+        ...(await getLab()).map(entry => ({ params: { path: `lab/${entry.id}` }, props: { Page: Home, pageProps: { entry } } })),
+    ];
+}
+const { Page, pageProps } = Astro.props;
+---
+{"project" in pageProps ? <Project project={pageProps.project} /> : "entry" in pageProps ? <LabEntry entry={pageProps.entry} /> : <Page />}

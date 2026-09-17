@@ -1,0 +1,199 @@
+---
+import { i18n } from "../../lib/i18n";
+const { t } = i18n(Astro.url);
+import { commit } from "../../lib/build";
+
+const names = ["noise", "contour", "donut", "cube", "wave", "lorenz"];
+---
+
+<div class="lab-demo">
+	<div class="lab-stage" id="stage">
+			<canvas id="lab-field" class="field" data-seed={commit} aria-hidden="true"></canvas>
+		<div class="lab-mask" id="mask"></div>
+	</div>
+
+	<form class="controls" id="controls">
+		<label
+			>{t("scene", "scena")}
+			<select name="scene"
+				>{
+					names.map((n) => (
+						<option value={n} selected={n === "lorenz"}>
+							{n}
+						</option>
+					))
+				}</select
+			>
+			<span></span>
+		</label>
+		<label
+			>fps <input
+				type="range"
+				name="fps"
+				min="4"
+				max="30"
+				step="1"
+				value="12"
+			/><output></output></label
+		>
+		<label
+			>alpha <input
+				type="range"
+				name="alpha"
+				min="0.05"
+				max="0.8"
+				step="0.01"
+				value="0.36"
+			/><output></output></label
+		>
+		<label
+			>{t("density", "densità")} <input
+				type="range"
+				name="density"
+				min="0.1"
+				max="1"
+				step="0.05"
+				value="1"
+			/><output></output></label
+		>
+		<label
+			>{t("pointer", "puntatore")} <input
+				type="range"
+				name="radius"
+				min="40"
+				max="320"
+				step="10"
+				value="140"
+			/><output></output></label
+		>
+		<label
+			>{t("ramp", "caratteri")} <input
+				type="text"
+				name="ramp"
+				value=" .:-=+"
+				spellcheck="false"
+				autocomplete="off"
+			/><span></span></label
+		>
+		<label class="check"
+			><input type="checkbox" name="masks" /> masks as on home</label
+		>
+		<label class="check"
+			><input type="checkbox" name="offset" checked /> figure in the margin</label
+		>
+	</form>
+	<p class="readout" id="readout"></p>
+</div>
+
+<script>
+	import { mount } from "../../scripts/field/engine";
+	import { scenes } from "../../scripts/field/scenes";
+
+	const canvas = document.getElementById("lab-field");
+	const stage = document.getElementById("stage");
+	const form = document.getElementById("controls");
+	const readout = document.getElementById("readout");
+	const mask = document.getElementById("mask");
+	if (
+		!(canvas instanceof HTMLCanvasElement) ||
+		!(stage instanceof HTMLElement) ||
+		!(form instanceof HTMLFormElement) ||
+		!(readout instanceof HTMLElement) ||
+		!(mask instanceof HTMLElement)
+	)
+		throw new Error("field lab markup is incomplete");
+	const controls = form;
+	const fieldStage = stage;
+
+	const parsedSeed = Number.parseInt(canvas.dataset.seed ?? "0", 16);
+	const seed = Number.isFinite(parsedSeed) ? parsedSeed : 0;
+
+	const q = new URLSearchParams(location.search);
+	for (const el of Array.from(controls.elements)) {
+		if (!(el instanceof HTMLInputElement) && !(el instanceof HTMLSelectElement))
+			continue;
+		const v = q.get(el.name);
+		if (v == null) continue;
+		if (el.name === "scene") {
+			if (Object.hasOwn(scenes, v)) el.value = v;
+			continue;
+		}
+		if (el instanceof HTMLInputElement && el.type === "checkbox")
+			el.checked = v === "1";
+		else el.value = v;
+	}
+
+	const number = (value: FormDataEntryValue | null, fallback: number, min: number, max: number) => {
+		const n = Number(value);
+		return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
+	};
+
+	const read = () => {
+		const d = new FormData(controls);
+		const scene = String(d.get("scene") ?? "lorenz");
+		const ramp = String(d.get("ramp") ?? " .:-=+");
+		return {
+			scene: Object.hasOwn(scenes, scene) ? scene : "lorenz",
+			fps: number(d.get("fps"), 12, 4, 30),
+			alpha: number(d.get("alpha"), 0.36, 0.05, 0.8),
+			density: number(d.get("density"), 1, 0.1, 1),
+			radius: number(d.get("radius"), 140, 40, 320),
+			ramp: ramp || " .:-=+",
+			masks: d.get("masks") === "on",
+			offset: d.get("offset") === "on",
+		};
+	};
+
+	let s = read(),
+		current = s.scene;
+	const makeScene = (name: string) => scenes[name]?.(seed) ?? scenes.lorenz(seed);
+	const field = mount(canvas, {
+		scene: makeScene(current),
+		fps: s.fps,
+		alpha: s.alpha,
+		density: s.density,
+		radius: s.radius,
+		ramp: s.ramp,
+		masks: s.masks,
+		maskEl: mask,
+		figure: s.offset ? null : [0.5, 0.45],
+	});
+
+	function apply(event?: Event) {
+		s = read();
+		field.set({
+			fps: s.fps,
+			alpha: s.alpha,
+			density: s.density,
+			radius: s.radius,
+			ramp: s.ramp,
+			masks: s.masks,
+			figure: s.offset ? null : [0.5, 0.45],
+			...(s.scene !== current
+				? { scene: makeScene((current = s.scene)) }
+				: {}),
+		});
+		fieldStage.toggleAttribute("data-masks", s.masks);
+		for (const l of controls.querySelectorAll("label")) {
+			const i = l.querySelector<HTMLInputElement | HTMLSelectElement>(
+				"input,select",
+			);
+			const o = l.querySelector<HTMLOutputElement>("output");
+			if (o && i) o.value = i.value;
+		}
+        if (event) {
+            const url = new URL(location.href);
+            for (const [k, v] of Object.entries(s))
+                url.searchParams.set(k, typeof v === "boolean" ? (v ? "1" : "0") : String(v));
+            history.replaceState(null, "", url);
+        }
+	}
+	controls.addEventListener("input", apply);
+	controls.addEventListener("submit", (e) => e.preventDefault());
+	apply();
+
+	setInterval(() => {
+		const { cols, rows, cw, ch, ms } = field.stats();
+		readout.textContent = `${cols} × ${rows} ${document.documentElement.lang === "it" ? "celle" : "cells"} · ${cw} × ${ch} px · ${document.documentElement.lang === "it" ? "scena" : "scene"} ${ms} ms`;
+	}, 500);
+</script>

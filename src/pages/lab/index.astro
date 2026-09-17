@@ -1,0 +1,37 @@
+---
+import { i18n } from "../../lib/i18n";
+const { t, href } = i18n(Astro.url);
+import Base from "../../layouts/Base.astro";
+import Footer from "../../components/Footer.astro";
+import Row from "../../components/Row.astro";
+import { getLab, fmtMonth } from "../../lib/content";
+import { site } from "../../data/site";
+
+const entries = await getLab();
+---
+
+<Base
+	title={`Lab — ${site.name}`}
+	description={t("Unfinished experiments, with honest status tags.", "Esperimenti interattivi e studi visivi.")}>
+	<a class="back" href={href("/")} >{t("home", "inizio")}</a>
+	<h1 class="page-title">Lab</h1>
+	<p class="lead">{t("Interactive experiments in algorithms, rendering, and motion.", "Esperimenti interattivi su algoritmi, rappresentazione grafica e movimento.")}
+	</p>
+	<div class="rows enter" style="--i: 1">
+		<Row href={href("/lab/texture")} title="Texture lab" description={t("Adjust the paper's grain, fibers, and folds. Preview in light and dark and share your settings.", "Regola grana, fibre e pieghe della carta. Confronta chiaro e scuro e condividi le impostazioni.")} tag={t("working", "funzionante")} meta={t("interactive", "interattivo")} />
+		<Row href={href("/lab/ascii")}  title="ASCII lab" description={t("Algorithms, mechanisms, and shapes. Twelve animated studies on paper, with swappable rendering styles.", "Algoritmi, meccanismi e forme. Dodici studi animati con stili di rappresentazione selezionabili.")} tag={t("working", "funzionante")} meta={t("interactive", "interattivo")} />
+		{
+			entries.map((e) => (
+				<Row
+					href={href(`/lab/${e.id}`)}
+					title={e.data.title}
+					description={t(e.data.summary, "Sei scene animate in caratteri con controlli regolabili.")}
+					tag={t(e.data.status, "funzionante")}
+					meta={fmtMonth(e.data.touched)}
+					vt={`lab-${e.id}`}
+				/>
+			))
+		}
+	</div>
+	<Footer slot="footer" />
+</Base>

@@ -1,0 +1,52 @@
+---
+import { site } from "../data/site";
+import { version, commit, commitDate, relative } from "../lib/build";
+---
+
+<footer>
+	<div class="column footer-inner">
+		<nav class="footer-links" aria-label="Site">
+			<a href={site.github}>github</a><span aria-hidden="true">·</span>
+			<a href={`mailto:${site.email}`} data-email={site.email}>email</a
+			><span aria-hidden="true">·</span>
+			<a href="/rss.xml">rss</a><span aria-hidden="true">·</span>
+			<a href="/changelog">changelog</a>
+		</nav>
+		<div class="footer-meta">
+			<span
+				>v{version} · <a href="/changelog" class="plain">{commit}</a> · <time
+					datetime={commitDate.toISOString()}
+					>{relative(commitDate)}</time
+				></span
+			>
+			<button
+				class="theme"
+				type="button"
+				aria-pressed="false"
+				aria-label="Toggle theme"
+				title="Theme (t)">
+				<svg
+					width="12"
+					height="12"
+					viewBox="0 0 12 12"
+					aria-hidden="true">
+					<circle
+						cx="6"
+						cy="6"
+						r="5"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.2"></circle>
+					<path d="M6 1a5 5 0 0 1 0 10z" fill="currentColor"></path>
+				</svg>
+			</button>
+			<button
+				class="sound"
+				type="button"
+				aria-label="Toggle sound"
+				aria-pressed="false"
+				title="sound off">♪</button
+			>
+		</div>
+	</div>
+</footer>

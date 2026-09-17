@@ -1,0 +1,32 @@
+---
+import { i18n } from "../../lib/i18n";
+const { locale, t, href } = i18n(Astro.url);
+import Base from "../../layouts/Base.astro";
+import Footer from "../../components/Footer.astro";
+import Row from "../../components/Row.astro";
+import { getProjects } from "../../lib/content";
+import { site } from "../../data/site";
+
+const projects = await getProjects(locale);
+---
+
+<Base
+	title={`${t("Projects", "Progetti")} — ${site.name}`}
+	description={t("Things I've built, with what went wrong.", "I progetti che costruisco e le scelte dietro il codice.")}>
+	<a class="back" href={href("/")} >{t("home", "inizio")}</a>
+	<h1 class="page-title">{t("Projects", "Progetti")}</h1>
+	<div class="rows enter" style="--i: 1">
+		{
+			projects.map((p) => (
+				<Row
+					href={href(`/projects/${p.id.replace(/^it\//, "")}`)}
+					title={p.data.title}
+					description={p.data.summary}
+					meta={String(p.data.year)}
+					vt={`project-${p.id}`}
+				/>
+			))
+		}
+	</div>
+	<Footer slot="footer" />
+</Base>

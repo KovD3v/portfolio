@@ -1,0 +1,16 @@
+<div class="progress" aria-hidden="true"></div>
+
+<script>
+	if (!CSS.supports("animation-timeline: scroll()")) {
+		const el = document.querySelector<HTMLElement>(".progress");
+		if (el) {
+			const d = document.documentElement;
+			const update = () => {
+				const max = d.scrollHeight - d.clientHeight;
+				el.style.transform = `scaleX(${max ? d.scrollTop / max : 0})`;
+			};
+			addEventListener("scroll", update, { passive: true });
+			update();
+		}
+	}
+</script>

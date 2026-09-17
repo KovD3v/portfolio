@@ -1,0 +1,38 @@
+---
+import { i18n } from "../lib/i18n";
+const { locale, t, href } = i18n(Astro.url);
+import Base from "../layouts/Base.astro";
+import Footer from "../components/Footer.astro";
+import DataPlate from "../components/DataPlate.astro";
+import Section from "../components/Section.astro";
+import uses from "../data/uses.json";
+import { site } from "../data/site";
+const groups = uses;
+const labels: Record<string, string> = { site: "sito", headphones: "cuffie", keyboard: "tastiera", display: "schermo", "os laptop": "sistema portatile", terminal: "terminale", font: "carattere", fonts: "caratteri" };
+const labelFor = (label: string) => locale === "it" ? labels[label] ?? label : label;
+---
+
+<Base
+	title={`${t("Uses", "Strumenti")} — ${site.name}`}
+	description={t("Hardware, software, and the setup behind this site.", "Hardware, software e strumenti dietro questo sito.")}>
+	<a class="back" href={href("/")} >{t("home", "inizio")}</a>
+	<h1 class="page-title">{t("Uses", "Strumenti")}</h1>
+	<p class="lead">
+		{t("The hardware and software I use.", "Hardware e software che uso.")}
+	</p>
+	{
+		Object.entries(groups).map(([name, rows], i) => (
+			<Section id={name} title={labelFor(name)}>
+				<div class="enter" style={`--i: ${i + 1}`}>
+					<DataPlate
+						items={(rows as string[][]).map(([label, value]) => ({
+							label: labelFor(label),
+							value,
+						}))}
+					/>
+				</div>
+			</Section>
+		))
+	}
+	<Footer slot="footer" />
+</Base>

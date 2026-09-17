@@ -1,0 +1,19 @@
+---
+import Base from "../layouts/Base.astro";
+import Footer from "../components/Footer.astro";
+import English from "../content/profile/en.mdx";
+import Italian from "../content/profile/it.mdx";
+import { i18n } from "../lib/i18n";
+import { site } from "../data/site";
+const { locale, t, href } = i18n(Astro.url);
+const Content = locale === "it" ? Italian : English;
+---
+<Base
+    title={`${t("Profile", "Profilo")} — ${site.name}`}
+    description={t("Education, projects, and experience in software, AI, and cybersecurity.", "Formazione, progetti ed esperienze nello sviluppo software, nell'AI e nella cybersecurity.")}>
+    <a class="back" href={href("/")}>{t("home", "inizio")}</a>
+    <h1 class="page-title">{t("Profile", "Profilo")}</h1>
+    <article class="prose"><Content /></article>
+    <p class="updated">{t("Updated 16 September 2026", "Aggiornato il 16 settembre 2026")}</p>
+    <Footer slot="footer" />
+</Base>

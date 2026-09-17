@@ -1,0 +1,23 @@
+---
+interface Props {
+	id: string;
+	title: string;
+	live?: boolean;
+	more?: { href: string; label: string };
+}
+const { id, title, live, more } = Astro.props;
+---
+
+<section class="section" aria-labelledby={`${id}-h`}>
+	<h2 id={`${id}-h`} class="section-heading">
+		{live && <span class="dot" aria-hidden="true" />}{title}
+	</h2>
+	<slot />
+	{
+		more && (
+			<a class="more" href={more.href}>
+				{more.label}
+			</a>
+		)
+	}
+</section>

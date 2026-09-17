@@ -1,0 +1,22 @@
+{
+	"updated": "2026-09-14",
+	"reading": {
+		"title": "Teoria dei Sistemi lineari stazionari a dimensione finita",
+		"note": "Not started yet",
+		"progress": 0
+	},
+	"building": [
+		{
+			"title": "Amber",
+			"href": "/projects/amber"
+		},
+		{
+			"title": "Drivewise",
+			"href": "/projects/drivewise"
+		}
+	],
+	"location": {
+		"city": "Rome",
+		"tz": "Europe/Rome"
+	}
+}

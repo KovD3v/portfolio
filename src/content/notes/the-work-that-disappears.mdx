@@ -1,0 +1,266 @@
+---
+title: "The Work That Disappears"
+summary: "The beauty of mathematical optimization: finding better answers, removing unnecessary work, and knowing what a program must preserve."
+date: 2026-09-14
+status: growing
+tags: [optimization, programming, mathematics]
+---
+
+# The Work That Disappears
+
+*On mathematical optimization, programming, and the pleasure of understanding what is necessary.*
+
+I find it difficult to leave a repeated calculation alone. Once I have noticed that its answer is already available somewhere, each new execution feels like an unanswered question about the program.
+
+That feeling is useful, but it is not a performance model. I can spend an hour removing work that costs almost nothing. I can also make code shorter while making it harder to understand. Learning to optimize has meant learning to distinguish the things I want to revisit from the things the machine, or its user, actually needs improved.
+
+The changes I enjoy most satisfy both kinds of attention. A better formulation gives the computer less to do and gives me less uncertainty to carry. I can explain why a family of possibilities need not be explored, or why an intermediate result need not exist.
+
+This is where mathematical optimization becomes beautiful to me: a reason is found, and some work is no longer necessary.
+
+## What a better answer owes us
+
+An optimization problem needs a set of choices, an objective by which to compare them, and constraints that determine which choices are allowed. Without those ingredients, *better* remains a preference rather than a mathematical claim. [[1]](#source-1)
+
+Writing them down is already an act of clarification. For a program, should we reduce its average running time, its longest acceptable delay, or its memory use? Must its output remain identical? Which inputs matter? A faster implementation that silently abandons a requirement has changed the question.
+
+Consider a small allocation problem. We have ten units to distribute between two destinations. Suppose we assign the following cost:
+
+<p>
+  Minimize <var>x</var>² + 4<var>y</var>², subject to <var>x</var> + <var>y</var> = 10 and <var>x</var>, <var>y</var> ≥ 0.
+</p>
+
+The coefficient four is an assumption of this model, not a fact about allocation in general. Equal shares would cost 125. We could search for an improvement, but the constraint lets us rewrite the expression exactly:
+
+<p>
+  <var>x</var>² + 4<var>y</var>² = 80 + (<var>x</var> − 4<var>y</var>)² / 5.
+</p>
+
+The squared term cannot be negative. Every feasible allocation therefore costs at least 80. Choosing *x* = 8 and *y* = 2 makes that term zero and reaches the bound.
+
+The answer is accompanied by a reason to stop. We have not merely failed to find anything better; we have shown that nothing better is permitted by the model.
+
+This distinction matters more to me than the numerical improvement. An answer without a justification leaves the search open in my head. A matching lower bound closes it without asking for trust.
+
+Convex optimization offers a wider version of this reassurance: when the objective and feasible set are convex, every local minimum is global. Duality supplies another powerful idea: a valid lower bound can certify a feasible solution's optimality when their values agree. Neither statement promises that every optimization problem is easy. Each identifies structure that makes a particular conclusion defensible. [[1]](#source-1)
+
+## What the future needs to remember
+
+Finding an optimal answer and optimizing a program are different tasks. The first concerns which answer to choose; the second concerns the resources required to obtain an acceptable answer. A scheduling problem lets us watch them meet.
+
+Suppose each job has a fixed start, a fixed end, and an integer value. Only one job may run at a time. We want a compatible selection with maximum total value. A job ending at time five may be followed by one starting at time five: the intervals include their start but exclude their end.
+
+Choosing the most valuable individual job is unreliable. A job occupying times zero through five and worth ten loses to two compatible jobs worth five and six. Listing every subset would settle the question, but *n* jobs have 2ⁿ subsets. We need a better account of what makes one choice relevant to another.
+
+Sort the jobs by finishing time and number them from one. Let `best[j]` mean the largest total value available among the first `j` jobs. Let `p(j)` be the number of earlier jobs ending no later than job `j` begins. Those jobs form a prefix of the sorted list.
+
+Any optimum either excludes job `j`, leaving `best[j - 1]`, or includes it, leaving only that compatible prefix. Hence:
+
+```text
+best[0] = 0
+best[j] = max(best[j - 1], value[j] + best[p(j)])
+```
+
+This is the standard weighted interval scheduling recurrence. Its justification is exhaustive without being an exhaustive search: the two cases cover every solution, and each refers to a smaller problem of the same form. [[2]](#source-2) [[3]](#source-3)
+
+Here is a Python implementation that returns both the value and a schedule achieving it. Time is measured in integer ticks; values are integers too. Negative values are allowed, and selecting nothing is valid.
+
+```python
+from bisect import bisect_right
+from collections.abc import Iterable
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class Job:
+    start: int
+    end: int
+    value: int
+
+    def __post_init__(self) -> None:
+        if any(type(x) is not int for x in (self.start, self.end, self.value)):
+            raise TypeError("Job fields must be integers.")
+        if self.start >= self.end:
+            raise ValueError("A job must end after it starts.")
+
+def optimal_schedule(jobs: Iterable[Job]) -> tuple[int, list[Job]]:
+    ordered = sorted(jobs, key=lambda job: job.end)
+    ends = [job.end for job in ordered]
+    previous: list[int] = []
+    best = [0]
+
+    for i, job in enumerate(ordered):
+        # This prefix length is also an index into best.
+        prefix = bisect_right(ends, job.start, 0, i)
+        previous.append(prefix)
+        best.append(max(best[-1], job.value + best[prefix]))
+
+    chosen: list[Job] = []
+    i = len(ordered)
+    while i:
+        if best[i] == best[i - 1]:
+            i -= 1
+        else:
+            chosen.append(ordered[i - 1])
+            i = previous[i - 1]
+
+    chosen.reverse()
+    return best[-1], chosen
+
+jobs = [Job(0, 3, 5), Job(3, 5, 6), Job(0, 5, 10), Job(5, 6, 2)]
+score, schedule = optimal_schedule(jobs)
+
+assert score == 13
+assert schedule == [jobs[0], jobs[1], jobs[3]]
+```
+
+Sorting and binary searches take O(*n* log *n*) time; the recurrence and reconstruction take O(*n*). Storage is O(*n*), under the usual model that treats integer comparisons and arithmetic as constant-cost operations. Python's `bisect_right` gives the boundary we need, including jobs whose end equals the next start. [[2]](#source-2) [[4]](#source-4)
+
+The important compression is conceptual. For each compatible prefix, the recurrence needs its best achievable value, not every history that could produce it. Histories still matter when reconstructing an actual schedule, but they do not all need to survive as separate candidates. [[3]](#source-3)
+
+That is the detail I return to: forgetting is safe only after we have identified what the future can depend on. Add a rule that consecutive jobs require setup time depending on their identities, and the prefix value alone no longer tells us enough. The state would need to change.
+
+## An order worth keeping
+
+The same pleasure appears in less conspicuously mathematical code. Consider this SQLite schema and query:
+
+```sql
+CREATE TABLE events (
+    id INTEGER PRIMARY KEY,
+    owner_id INTEGER NOT NULL,
+    starts_at INTEGER NOT NULL
+);
+
+CREATE INDEX events_by_owner_and_start
+    ON events(owner_id, starts_at);
+
+EXPLAIN QUERY PLAN
+SELECT starts_at
+FROM events
+WHERE owner_id = 7
+ORDER BY starts_at;
+```
+
+The index places entries in owner order, then start-time order. SQLite can use it to locate one owner's entries, return them chronologically, and obtain the requested column without consulting the table. It is a *covering index*: the information this query needs is already present. A separate sort can disappear. [[5]](#source-5)
+
+The SQL still asks for ordered results. The improvement comes from arranging data so that the requested order is available at the point of use.
+
+This is an exchange, not a free deletion. An additional structure must be stored and maintained. Whether the exchange is worthwhile depends on the workload. I would inspect `EXPLAIN QUERY PLAN` rather than infer the execution strategy from the query's appearance; SQLite documents both covering-index plans and the temporary sorting structures that an index can avoid. [[5]](#source-5)
+
+What satisfies me here is the fit between the question and the representation. The program does not need a cleverer answer to “how should I sort these rows?” It needs to notice when that question has already been answered.
+
+## Doing more arithmetic to finish sooner
+
+It would be easy to turn this into a rule that fewer calculations always mean better software. The original FlashAttention paper provides a useful correction.
+
+A conventional dense-attention implementation stores a large matrix of interactions between sequence positions. FlashAttention works in blocks, reducing transfers between a GPU's larger memory and its smaller, faster on-chip memory. It never materializes the full attention matrix in the larger memory. During training, it recomputes some intermediates instead of retrieving them. In the authors' experiments, this extra arithmetic accompanied faster execution because it reduced expensive memory traffic. [[6]](#source-6)
+
+For a fixed head dimension, the dense computation remains quadratic in sequence length. The gain does not come from pretending those interactions have vanished. It comes from changing where data lives and when it is needed. [[6]](#source-6)
+
+Remembering helped the scheduler; recomputing helped this GPU algorithm. Neither technique is a universal prescription. The important question is which resource it saves.
+
+Optimization requires a cost model with enough resemblance to the machine to be useful. Sometimes the most important operations are the ones our equations barely mention.
+
+## The promise inside a transformation
+
+There is another boundary between an equation and its implementation: arithmetic itself.
+
+Over real numbers, addition is associative. In ordinary binary64 floating-point arithmetic, rounding makes the grouping observable. Python's documentation explains why floating-point operations can introduce rounding error. This small example exposes the consequence: [[7]](#source-7)
+
+```python
+a, b, c = 1e16, -1e16, 1.0
+
+print((a + b) + c)  # 1.0
+print(a + (b + c))  # 0.0
+```
+
+The first expression cancels the large values before adding one. In the second, adding one to the large negative value rounds back to that value, and the final addition produces zero.
+
+A transformation justified in real arithmetic therefore needs a second justification before being applied to floating-point code. LLVM makes this distinction explicit: its `reassoc` fast-math flag permits algebraically equivalent transformations that may substantially change floating-point results. [[8]](#source-8)
+
+For the same reason, *exact* attention should not be read as a promise of identical floating-point bits: equality of the mathematical operations alone does not establish that guarantee. [[6]](#source-6) [[7]](#source-7)
+
+There is nothing inherently wrong with accepting a controlled numerical difference. But the tolerance must belong to the specification. It cannot be invented after a benchmark improves.
+
+Before changing an implementation, I want to know what it owes its caller. Sometimes that is identical output. Sometimes it is an error bound. Sometimes the order of otherwise equal results matters. These details are not obstacles surrounding the real optimization; they define the space in which it is allowed to happen.
+
+## Where attention belongs
+
+Even a correct improvement can be aimed at the wrong place.
+
+Amdahl's argument about the limits of parallel execution has a simple application to any isolated speedup. Suppose a fraction *p* of a fixed workload's original running time belongs to the part we improve. If that part becomes *s* times faster while everything else stays unchanged, with no added overhead, then:
+
+<p>
+  overall speedup = 1 / ((1 − <var>p</var>) + <var>p</var> / <var>s</var>).
+</p>
+
+If the part accounts for 10% of the original time, even making it instantaneous leaves the other 90%. The maximum overall speedup is 1 / 0.9, approximately 1.11. Ten times faster locally would give about 1.10 overall. These are consequences of the stated model, not benchmark results. [[9]](#source-9)
+
+I appreciate this limit because it puts a boundary around my own attention. The code that keeps attracting me is not necessarily the code that deserves another evening.
+
+Knuth's discussion of optimization makes room for both restraint and care: he warns against pursuing efficiencies in noncritical code while defending worthwhile improvements in the parts identified as important. Measurement is central to that distinction. [[10]](#source-10)
+
+For a small Python experiment, `timeit` is useful precisely when its conditions are understood. Setup runs outside the timed section, and garbage collection is disabled by default. Both choices can exclude work that matters in a real application. Repeated measurements help reveal timing interference; they do not make an unrepresentative workload representative. [[11]](#source-11)
+
+For the scheduler above, I would vary the number of jobs and the pattern of overlaps, include sorting in an end-to-end comparison, and check the selected schedules against exhaustive search on small inputs before timing larger ones. For the indexed query, I would include the cost of maintaining the index if writes matter to the application.
+
+These choices belong in the explanation of a result. “Faster” should tell a reader what was measured, what was preserved, and which costs were counted.
+
+## A stopping condition for the programmer
+
+The desire to keep improving a program can outlast any useful improvement. I have to be careful with an activity in which another measurable gain is almost always imaginable.
+
+Multiple objectives make the word *optimal* more modest. A Pareto-optimal choice is one for which no feasible alternative improves an objective without worsening another. There may be many such choices; the definition alone does not select the trade-off we should prefer. [[1]](#source-1)
+
+That leaves room for judgment. I might accept a little more memory to make a latency requirement dependable. I might keep a slower implementation because the faster one would be difficult to verify and the difference is irrelevant to its use. Those decisions need reasons, but they need not apologize for declining the smallest number on a chart.
+
+I also want room to study an optimization simply because it interests me. An evening spent understanding why a recurrence works can be worthwhile even when no application needs the result. Curiosity and engineering have different stopping conditions. Confusing them makes a learning exercise look like a delivery failure, or makes a private fascination look like a product requirement.
+
+The beauty I am looking for survives that distinction. It is there in the allocation whose lower bound meets its cost, in the scheduling state that remembers exactly enough, and in the data arrangement that makes a later operation unnecessary.
+
+After a good optimization, I want to be able to explain both the answer and the absence of the work we removed. The program still owes its caller the same promise. We have understood enough to keep it with less.
+
+## Sources
+
+<p id="source-1">
+  <strong>1.</strong> Stephen Boyd and Lieven Vandenberghe, <em>Convex Optimization</em>, Cambridge University Press, 2004. Sections 4.1, 4.2.2, 4.7.5, and 5.5.1: formulation, local and global optima, multiple objectives, and optimality certificates. <a href="https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf">Author-hosted book</a>.
+</p>
+
+<p id="source-2">
+  <strong>2.</strong> Kevin Wayne, <em>Dynamic Programming I</em>, lecture slides accompanying Jon Kleinberg and Éva Tardos's <em>Algorithm Design</em>, Princeton University; revision dated February 10, 2021. Slides 9–18: weighted interval scheduling, recurrence, reconstruction, and complexity. <a href="https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/06DynamicProgrammingI.pdf">Lecture slides</a>.
+</p>
+
+<p id="source-3">
+  <strong>3.</strong> University of Washington, CSE 417, <em>Weighted Interval Scheduling</em>, Autumn 2025. Sections 2–3: subproblems, memory structure, and reconstructing selected events. <a href="https://courses.cs.washington.edu/courses/cse417/25au/readings/weighted_interval_scheduling.html">Course notes</a>.
+</p>
+
+<p id="source-4">
+  <strong>4.</strong> Python Software Foundation, <em>bisect — Array bisection algorithm</em>. The semantics and performance of binary search, including the right-hand insertion boundary. <a href="https://docs.python.org/3/library/bisect.html">Official documentation</a>.
+</p>
+
+<p id="source-5">
+  <strong>5.</strong> SQLite, <em>Query Planning</em>, sections 1.6–1.7, 2.3, and 3.2; and <em>EXPLAIN QUERY PLAN</em>, sections 1.1–1.2. Multi-column and covering indexes, ordered traversal, and temporary sorting structures. <a href="https://sqlite.org/queryplanner.html">Query planning</a>; <a href="https://sqlite.org/eqp.html">plan inspection</a>.
+</p>
+
+<p id="source-6">
+  <strong>6.</strong> Tri Dao, Daniel Y. Fu, Stefano Ermon, Atri Rudra, and Christopher Ré, <em>FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness</em>, NeurIPS 2022. Sections 3.1–3.2. <a href="https://proceedings.neurips.cc/paper_files/paper/2022/file/67d57c32e20fd0a7a302cb81d36e40d5-Paper-Conference.pdf">Published paper</a>.
+</p>
+
+<p id="source-7">
+  <strong>7.</strong> Python Software Foundation, <em>Floating-Point Arithmetic: Issues and Limitations</em>. Binary representation and rounding error. <a href="https://docs.python.org/3/tutorial/floatingpoint.html">Official tutorial</a>.
+</p>
+
+<p id="source-8">
+  <strong>8.</strong> LLVM Project, <em>LLVM Language Reference Manual</em>, “Fast-Math Flags,” particularly <code>reassoc</code>. <a href="https://llvm.org/docs/LangRef.html#fast-math-flags">Official language reference</a>.
+</p>
+
+<p id="source-9">
+  <strong>9.</strong> Gene M. Amdahl, <em>Validity of the Single Processor Approach to Achieving Large Scale Computing Capabilities</em>, AFIPS Spring Joint Computer Conference, 1967, pp. 483–485. The fixed-workload argument underlying the speedup calculation. <a href="https://doi.org/10.1145/1465482.1465560">Original publication</a>; <a href="https://people.cs.umass.edu/~emery/classes/cmpsci691st/readings/Conc/Amdahl-04785615.pdf">2007 reprint hosted by the University of Massachusetts Amherst</a>.
+</p>
+
+<p id="source-10">
+  <strong>10.</strong> Donald E. Knuth, <em>Structured Programming with go to Statements</em>, <em>ACM Computing Surveys</em> 6(4), 1974, pp. 261–301, especially p. 268. Measurement, critical code, and the costs of misplaced optimization. <a href="https://doi.org/10.1145/356635.356640">ACM publication</a>.
+</p>
+
+<p id="source-11">
+  <strong>11.</strong> Python Software Foundation, <em>timeit — Measure execution time of small code snippets</em>. Setup exclusions, garbage collection, and repeated measurements. <a href="https://docs.python.org/3/library/timeit.html">Official documentation</a>.
+</p>

@@ -1,0 +1,69 @@
+---
+import Base from "../../layouts/Base.astro";
+import Footer from "../../components/Footer.astro";
+import { i18n } from "../../lib/i18n";
+import { site } from "../../data/site";
+import { paperSettings } from "../../../public/paper-texture-settings.js";
+
+const { t, href } = i18n(Astro.url);
+const groups = [
+  { id: "surface", title: t("Surface", "Superficie") },
+  { id: "shape", title: t("Folds and pattern", "Pieghe e trama") },
+];
+---
+
+<Base title={`Texture lab · ${site.name}`} description={t("Tune the site's paper texture in real time.", "Regola in tempo reale la texture della carta usata nel sito.")}>
+  <a class="back" href={href("/lab")}>lab</a>
+  <h1 class="page-title">Texture lab</h1>
+  <p class="lead">{t("The whole page is your preview. Adjust the paper, compare light and dark, then copy a link to keep your settings. Changes stay in this lab.", "L'intera pagina è la tua anteprima. Regola la carta, confronta chiaro e scuro, poi copia un link per ritrovare le impostazioni. Le modifiche restano in questo laboratorio.")}</p>
+
+  <form id="texture-controls">
+    <fieldset class="texture-toolbar" disabled>
+      <legend class="sr-only">{t("Preview controls", "Controlli dell'anteprima")}</legend>
+      <label class="texture-visible"><input id="texture-visible" type="checkbox" checked />{t("Show texture", "Mostra texture")}</label>
+      <button type="reset">{t("Restore site defaults", "Ripristina valori del sito")}</button>
+      <button id="texture-share" type="button">{t("Copy link", "Copia link")}</button>
+    </fieldset>
+    <p id="texture-status" role="status"
+      data-copied={t("Link copied.", "Link copiato.")}
+      data-copy-error={t("Copy the address from your browser to share these settings.", "Copia l'indirizzo dalla barra del browser per condividere queste impostazioni.")}
+      data-unavailable={t("The texture could not load. Try reloading this page or a browser with WebGL enabled.", "La texture non è stata caricata. Ricarica la pagina o prova un browser con WebGL attivo.")}
+    >{t("Loading texture…", "Caricamento della texture…")}</p>
+    <div class="texture-groups">
+      {groups.map(group => (
+        <fieldset disabled>
+          <legend>{group.title}</legend>
+          {paperSettings.filter(setting => setting.group === group.id).map(setting => (
+            <div class="texture-control">
+              <label for={`texture-${setting.name}`}>{t(setting.label[0], setting.label[1])}</label>
+              <output for={`texture-${setting.name}`}>{setting.value}</output>
+              <input id={`texture-${setting.name}`} name={setting.name} type="range" min={setting.min} max={setting.max} step={setting.step} value={setting.value} />
+            </div>
+          ))}
+        </fieldset>
+      ))}
+    </div>
+  </form>
+  <noscript><p>{t("Enable JavaScript to adjust the texture.", "Attiva JavaScript per regolare la texture.")}</p></noscript>
+  <p class="texture-credit"><a href="https://shaders.paper.design/paper-texture">{t("Paper texture by Paper", "Texture della carta di Paper")}</a></p>
+  <Footer slot="footer" />
+</Base>
+
+<style>
+  fieldset { min-width:0; border:0; padding:0; margin:0; }
+  legend { font-size:16px; font-weight:500; margin-bottom:16px; }
+  .texture-toolbar { display:flex; align-items:center; flex-wrap:wrap; gap:8px 24px; border-block:1px solid var(--line); }
+  .texture-visible { display:flex; align-items:center; gap:8px; min-height:44px; font-size:14px; }
+  button { min-height:44px; padding:0; background:none; border:0; color:var(--fg-2); font:14px var(--sans); text-decoration:underline; text-underline-offset:4px; cursor:pointer; }
+  button:hover { color:var(--action); }
+  input { accent-color:var(--action); }
+  :disabled { cursor:wait; }
+  #texture-status { min-height:1.6em; margin:8px 0 24px; color:var(--fg-2); font-size:13px; }
+  .texture-groups { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px 48px; }
+  .texture-control { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:0 12px; }
+  .texture-control label { font-size:14px; }
+  .texture-control output { color:var(--fg-2); font:12px/1.8 var(--mono); font-variant-numeric:tabular-nums; }
+  .texture-control input { grid-column:1 / -1; width:100%; min-width:0; height:36px; margin:0 0 8px; }
+  .texture-credit { margin-top:24px; font-size:13px; color:var(--fg-2); }
+  @media (max-width:600px) { .texture-groups { grid-template-columns:1fr; } }
+</style>

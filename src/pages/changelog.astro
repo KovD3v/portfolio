@@ -1,0 +1,30 @@
+---
+import { i18n } from "../lib/i18n";
+const { t, href } = i18n(Astro.url);
+import Base from "../layouts/Base.astro";
+import Footer from "../components/Footer.astro";
+import changelog from "../data/changelog.json";
+
+import { site } from "../data/site";
+---
+
+<Base
+	title={`${t("Changelog", "Aggiornamenti")} — ${site.name}`}
+	description={t("One line per change to this site.", "La cronologia delle modifiche a questo sito.")}>
+	<a class="back" href={href("/")} >{t("home", "inizio")}</a>
+	<h1 class="page-title">{t("Changelog", "Aggiornamenti")}</h1>
+	<p class="lead">{t("This site has not been published yet. Release notes will appear here after the first publication.", "Questo sito non è ancora stato pubblicato. La cronologia inizierà con la prima pubblicazione.")}</p>
+	<dl class="plate enter" style="--i: 1">
+		{
+			(changelog as { date: string; text: string }[]).map((c) => (
+				<div class="plate-row">
+					<>
+						<dt>{c.date}</dt>
+						<dd>{c.text}</dd>
+					</>
+				</div>
+			))
+		}
+	</dl>
+	<Footer slot="footer" />
+</Base>

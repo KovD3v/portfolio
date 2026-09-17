@@ -1,0 +1,23 @@
+---
+import { i18n } from "../lib/i18n";
+const { locale, t, href } = i18n(Astro.url);
+import Base from "../layouts/Base.astro";
+import Footer from "../components/Footer.astro";
+import DataPlate from "../components/DataPlate.astro";
+import { nowItems, nowUpdated } from "../lib/now";
+import { site } from "../data/site";
+const items = await nowItems(locale);
+---
+
+<Base
+	title={`${t("Now", "Ora")} — ${site.name}`}
+	description={t("What I'm reading, building, and where I am.", "Cosa leggo, cosa costruisco e dove sono.")}>
+	<a class="back" href={href("/")} >{t("home", "inizio")}</a>
+	<h1 class="page-title">{t("Now", "Ora")}</h1>
+	<p class="lead">
+		{t("What I'm doing at the moment. Updated when it changes, not on a\n\t\tschedule.", "Cosa sto facendo in questo periodo. Aggiorno questa pagina quando cambia qualcosa.")}
+	</p>
+	<div class="enter" style="--i: 1"><DataPlate items={items} /></div>
+	<p class="updated">{t("updated", "aggiornato")} {nowUpdated.toLocaleDateString(locale === "it" ? "it-IT" : "en-GB")}</p>
+	<Footer slot="footer" />
+</Base>

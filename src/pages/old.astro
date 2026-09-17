@@ -1,0 +1,82 @@
+---
+import Base from "../layouts/Legacy.astro";
+import Footer from "../components/LegacyFooter.astro";
+import Section from "../components/Section.astro";
+import Row from "../components/Row.astro";
+import DataPlate from "../components/DataPlate.astro";
+import Field from "../components/Field.astro";
+import { getNotes, getProjects, noteMeta } from "../lib/content";
+import { nowItems } from "../lib/now";
+import { site } from "../data/site";
+
+const projects = (await getProjects()).slice(0, 5);
+const now = await nowItems();
+const notes = (await getNotes()).slice(0, 3);
+---
+
+<Base
+	title={site.name}
+	description={site.description}>
+	<header class="intro enter" style="--i: 0">
+		<span class="label version"
+			><span class="dot"></span>v0.1 · prototype</span
+		>
+		<h1>{site.name}</h1>
+		<div class="ident">Rome · Sapienza University of Rome</div>
+		<p>I'm studying computer and control engineering at Sapienza University of Rome, starting my second year.</p>
+		<p>
+			I keep <a href="/notes">notes</a> on what I'm learning, unfinished things
+			in the <a href="/lab">lab</a>, and a short page on what I'm doing <a
+				href="/now">now</a
+			>. Everything is reachable from the <button
+				type="button"
+				class="link"
+				data-open-palette>menu</button
+			>.
+		</p>
+	</header>
+
+	<Field scene="lorenz" mask=".intro" class="field-home" />
+
+	<Section id="projects" title="Projects">
+		<div class="rows enter" style="--i: 1">
+			{
+				projects.map((p) => (
+					<Row
+						href={`/projects/${p.id}`}
+						title={p.data.title}
+						description={p.data.summary}
+						meta={String(p.data.year)}
+						vt={`project-${p.id}`}
+					/>
+				))
+			}
+		</div>
+	</Section>
+
+	<Section
+		id="notes"
+		title="Notes"
+		more={{ href: "/notes", label: "all notes" }}>
+		<div class="rows enter" style="--i: 2">
+			{
+				notes.map((n) => (
+					<Row
+						href={`/notes/${n.id}`}
+						title={n.data.title}
+						meta={noteMeta(n)}
+						vt={`note-${n.id}`}
+					/>
+				))
+			}
+		</div>
+	</Section>
+
+	<Section id="now" title="Now" live more={{ href: "/now", label: "more" }}>
+		<div class="enter" style="--i: 3">
+			<DataPlate items={now} />
+		</div>
+	</Section>
+
+	<Footer slot="footer" />
+</Base>

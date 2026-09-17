@@ -1,0 +1,50 @@
+---
+import { i18n } from "../../lib/i18n";
+const { locale, t, href } = i18n(Astro.url);
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Footer from "../../components/Footer.astro";
+import DataPlate from "../../components/DataPlate.astro";
+import { getLab, fmtMonth, host } from "../../lib/content";
+
+export async function getStaticPaths() {
+	return (await getLab()).map((entry) => ({
+		params: { slug: entry.id },
+		props: { entry },
+	}));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, summary, status, started, touched, source } = entry.data;
+
+// a lab entry gets a live demo if src/components/lab/<id>.astro exists
+const demos = import.meta.glob<{ default: any }>(
+	"../../components/lab/*.astro",
+	{ eager: true },
+);
+const Demo = demos[`../../components/lab/${entry.id}.astro`]?.default;
+
+const plate = [
+	{ label: t("status", "stato"), value: t(status, "funzionante"), live: status === "working" },
+	...(started ? [{ label: "started", value: fmtMonth(started) }] : []),
+	...(touched ? [{ label: "last touched", value: fmtMonth(touched) }] : []),
+	...(source ? [{ label: "source", value: host(source), href: source }] : []),
+];
+---
+
+<Base title={`${title} — lab`} description={t(summary, "Sei scene animate in caratteri con controlli regolabili.")}>
+	<a class="back" href={href("/lab")} >lab</a>
+	<header class="enter" style="--i: 0">
+		<h1 class="page-title" style={`view-transition-name: lab-${entry.id}`}>
+			{title}
+		</h1>
+		<p class="page-summary">{t(summary, "Sei scene animate in caratteri con controlli regolabili.")}</p>
+	</header>
+	<div class="page-plate enter" style="--i: 1">
+		<DataPlate items={plate} />
+	</div>
+	<article class="prose enter" style="--i: 2">{locale === "it" ? <><p>Un renderer su canvas con sei scene in caratteri: rumore, curve di livello, un toro rotante, un cubo, onde e l’attrattore di Lorenz.</p><p>I controlli modificano scena, frequenza dei fotogrammi, persistenza, densità e risposta al puntatore. Le impostazioni sono riportate nell’URL per condividere una configurazione.</p></> : <Content />}</article>
+	{Demo && <Demo />}
+	<Footer slot="footer" />
+</Base>
