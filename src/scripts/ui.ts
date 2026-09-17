@@ -1,11 +1,9 @@
 import { initTheme, toggleTheme } from "./theme";
-import { initSound } from "./sound";
 import { initEmail } from "./email";
 import { initClock } from "./clock";
 import { initPalette, openPalette, closePalette } from "./palette";
 
 initTheme();
-initSound();
 initEmail();
 initClock();
 initPalette();

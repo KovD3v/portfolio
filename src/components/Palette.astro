@@ -61,7 +61,6 @@ const groups = Astro.props.groups ?? [
 		kind: t("action", "azione"),
 		items: [
 			{ label: t("theme", "tema"), action: "theme" },
-			{ label: t("sound", "suoni"), action: "sound" },
 			{ label: t("copy email", "copia email"), action: "email" },
 			...(["/old", "/lab/field"].includes(Astro.url.pathname) ? scenes : []).map((s) => ({
 				label: `field: ${s}`,

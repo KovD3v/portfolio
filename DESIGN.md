@@ -8,7 +8,7 @@ Read the five decisions below before changing the homepage. Allow one minute.
 - Use IBM Plex Sans for prose. Use monospace for metadata and ASCII.
 - Keep animated ASCII in the background. Donut and cube experiments are welcome there.
 - Include dark mode at launch. Warm dark and OLED still need comparison.
-- Keep readouts on home and inner pages. Include `/lab` and sound that starts off.
+- Keep detailed readouts on inner pages. Include `/lab`.
 
 V3 is the homepage and shared design for all current pages. Preserve its 820 px composition, left section labels, warm paper texture, subtle hand-drawn details, and ASCII artwork. Warm dark is the default, with a warm light/dark toggle. Artwork defaults to the robot arm in dither. There is no Settings panel or proposal alias. Explicit URL parameters remain supported; normal visits keep a clean URL. The former homepage is archived at `/old`. Earlier proposals have been removed.
 
@@ -38,11 +38,10 @@ Aim for one to one and a half desktop screens with real content. Let mobile page
 
 1. **Introduction.** Name and two or three short, first-person sentences. A factual version or update readout may sit at the right. Place the ASCII field behind this region, with less density behind prose.
 2. **Projects.** Aim for three to five rows when that content exists. Each has a title, one-line description, and right-aligned year. Separate rows with hairlines. On hover, shift the background slightly and move the arrow about 2 px.
-3. **Notes.** Show up to three recent notes with reading time and date. Reuse the row layout and link to the full index.
-4. **Now.** Show up to four label/value rows for reading, building, local time, and optional listening. Use small monospace labels, sans-serif values, and thin progress lines. Link to `/now`.
-5. **Footer.** Keep GitHub, email, RSS, and the sound control compact. Use ordinary sans-serif links.
+3. **Notes.** Show up to three recent notes with reading time and date. Reuse the row layout. Link to the full index only when more notes exist than are shown. Place RSS beside the notes.
+4. **Footer.** Keep only email, GitHub, and LinkedIn. Uses and changelog remain in the searchable menu; profile is linked from the introduction. Use ordinary sans-serif links.
 
-Keep the command palette available through `⌘K` and a visible "menu" control. Visitors must be able to navigate without knowing shortcuts.
+Keep the command palette available through `⌘K` and a visible "menu" control. Preserve search, project entries, and keyboard navigation. Visitors must be able to navigate without knowing shortcuts.
 
 Rows must work with a keyboard. Let metadata wrap or stack on narrow screens.
 
@@ -154,18 +153,6 @@ Reuse project rows. An experiment can become a project when there is enough work
 The field was proposed as the first lab entry, with density and frame-rate controls on its own page. Keep those controls off the homepage.
 
 `/lab/texture` and `/it/lab/texture` adjust the same paper shader and defaults used by the site. Controls affect only the lab, with URL replay, a visibility toggle, and a reset to site defaults. The shared paper background is fixed to the viewport so its texture does not stretch with page length.
-
-## Sound
-
-Sound starts off. Use a small footer control with an accessible name and visible on/off state. Remember the preference locally.
-
-Start with one soft mechanical click lasting 40 to 60 ms, decoded once with Web Audio. Play it only for these interactions while sound is enabled:
-
-- Theme toggle.
-- Palette opening or closing.
-- Sound toggle when enabling sound.
-
-Never play on hover or page load. Every interaction must work without audio.
 
 ## Engineering checks
 

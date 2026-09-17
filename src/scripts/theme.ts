@@ -1,10 +1,7 @@
-import { click } from "./sound";
-
 const root = document.documentElement;
 const meta = document.querySelector<HTMLMetaElement>(
 	'meta[name="theme-color"]',
 );
-const reduce = matchMedia("(prefers-reduced-motion: reduce)");
 
 type Theme = "light" | "oled";
 
@@ -37,11 +34,12 @@ function apply(theme: Theme) {
 }
 
 export function toggleTheme() {
-	const next = current() === "oled" ? "light" : "oled";
-	click();
-	if (document.startViewTransition && !reduce.matches)
-		document.startViewTransition(() => apply(next));
-	else apply(next);
+	const freeze = document.createElement("style");
+	freeze.textContent = "*,*::before,*::after{transition:none!important}";
+	document.head.append(freeze);
+	apply(current() === "oled" ? "light" : "oled");
+	void root.offsetHeight;
+	requestAnimationFrame(() => freeze.remove());
 }
 
 export function initTheme() {

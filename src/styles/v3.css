@@ -11,7 +11,6 @@
 	.v3-preview { display:flex; flex-wrap:wrap; gap:4px 16px; justify-content:space-between; align-items:center; padding-top:28px; color:var(--fg-2); font-size:14px; position:relative; z-index:5; }
 	.v3-edition { display:flex; align-items:center; gap:9px; min-height:44px; font:12px var(--mono); }
 	.v3-preview-actions { display:flex; gap:16px; align-items:center; margin-left:auto; }
-	.v3-preview-actions > a, .v3-preview .v3-menu { display:inline-flex; justify-content:center; align-items:center; min-width:44px; min-height:44px; }
 	.v3-preview a { text-decoration:none; }
 	.v3-art-choices { width:min(820px, calc(100% - 64px)); margin:26px auto 0; }
 	.v3-lab-heading { margin:32px 0 24px; }
@@ -69,6 +68,7 @@
 	.v3-notes .row { padding-block:16px; align-items:center; }
 	.v3-notes .row-meta { padding-top:0; }
 	.v3-more { display:inline-block; margin-top:12px; padding-block:5px; font-size:13px; color:var(--fg-2); text-decoration:none; }
+	.v3-more + .v3-more { margin-left:20px; }
 	.v3-more:hover { text-decoration:underline; }
 	.v3-section .plate-row { grid-template-columns:90px minmax(0,1fr); column-gap:20px; padding-block:12px; }
 	.v3-section .plate dt { font-size:11px; padding-top:3px; }
@@ -79,12 +79,8 @@
 	.v3-footer { margin:10px 0 0 var(--v3-rail); border-top:1px solid var(--line); padding:18px 0 32px; display:flex; justify-content:space-between; align-items:center; gap:20px; }
 	.v3-footer nav { display:flex; gap:24px; }
 	.v3-footer a { font-size:13px; color:var(--fg-2); text-decoration:none; padding-block:10px; }
-	.v3-sound.sound { all:unset; display:flex; align-items:center; gap:8px; font-size:12px; color:var(--fg-2); cursor:pointer; min-height:44px; }
-	.v3-sound-on { display:none; }
-	.v3-sound[data-on] .v3-sound-off { display:none; }
-	.v3-sound[data-on] .v3-sound-on { display:inline; }
-	a:hover, .v3-menu:hover, .v3-sound.sound:hover { color:var(--action); }
-	:focus-visible, .v3-sound.sound:focus-visible { outline:2px solid var(--action); outline-offset:4px; }
+	a:hover, .v3-menu:hover { color:var(--action); }
+	:focus-visible { outline:2px solid var(--action); outline-offset:4px; }
 	.skip { z-index:10; }
 	.palette { border-color:var(--line); }
 	.palette .p-kind { color:var(--fg-2); }
@@ -95,16 +91,14 @@
 		.v3-art-subjects { gap:0 18px; }
 		.v3-art-caption { display:block; }
 		.v3-art-caption label { margin-top:4px; min-height:36px; }
-		.v3-preview { padding-top:14px; }
-		.v3-preview { column-gap:12px; }
-		.v3-preview-actions { gap:8px; }
+		.v3-preview { padding-top:14px; column-gap:12px; }
+		.v3-preview-actions { gap:6px; }
 		.v3-main { padding-top:38px; }
 		.v3-intro { padding-bottom:40px; }
 		#v3-copy { max-width:440px; }
-		.v3-intro h1 { font-size:23px; }
+		.v3-intro h1 { font-size:23px; padding-right:136px; min-height:106px; }
 		.v3-intro p { font-size:17px; }
-		#v3-art { height:320px; top:38px; }
-		html:not([data-ascii-lab]) #v3-art { opacity:calc(var(--art-strength) * .5); }
+		#v3-art { height:128px; top:38px; mask-image:none; }
 		.v3-section { display:block; margin-bottom:32px; }
 		.v3-section h2 { padding-top:0; margin-bottom:12px; }
 		.v3-section .row { grid-template-areas:"title meta" "desc desc"; column-gap:12px; }
@@ -163,7 +157,12 @@ html[data-finish="material"] .v3-inner :is(.row,.plate-row) { box-shadow:inset 0
   .v3-inner .row-meta { white-space:normal; flex-wrap:wrap; }
   .v3-inner .plate-row { grid-template-columns:72px minmax(0,1fr); gap:12px; }
 }
-.v3-theme.theme { all:unset; display:inline-flex; justify-content:center; align-items:center; cursor:pointer; font:14px var(--sans); color:var(--fg-2); min-width:44px; min-height:44px; }
+.v3-theme.theme { all:unset; cursor:pointer; font:14px var(--sans); color:var(--fg-2); min-height:44px; }
+.v3-preview :is(a, button), .v3-preview .v3-theme { display:inline-flex; align-items:center; justify-content:center; min-width:44px; min-height:44px; }
+@media (prefers-reduced-motion:no-preference) {
+  .v3-preview button, .v3-preview .v3-theme { transition:transform 150ms cubic-bezier(0.2, 0, 0, 1); }
+  .v3-preview button:active:not(:focus-visible) { transform:scale(0.96); }
+}
 .v3-theme.theme:focus-visible { outline:2px solid var(--action); outline-offset:4px; }
 .v3-theme-dark { display:none; }
 [data-theme="light"] .v3-theme-light { display:none; }
