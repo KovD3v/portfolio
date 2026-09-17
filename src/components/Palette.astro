@@ -73,6 +73,7 @@ const groups = Astro.props.groups ?? [
 ---
 
 <dialog id="palette" class="palette" aria-label="Menu">
+	<div class="p-search">
 		<input
 			type="text"
 			aria-label={t("Search pages and actions", "Cerca pagine e azioni")}
@@ -82,7 +83,12 @@ const groups = Astro.props.groups ?? [
 		role="combobox"
 		aria-expanded="true"
 		aria-controls="p-list"
+		aria-autocomplete="list"
 	/>
+		<form method="dialog">
+			<button class="p-close" aria-label={t("Close menu", "Chiudi menu")}><span aria-hidden="true">×</span></button>
+		</form>
+	</div>
 	<div class="p-list" id="p-list" role="listbox">
 		{
 			groups
@@ -110,4 +116,5 @@ const groups = Astro.props.groups ?? [
 				))
 		}
 	</div>
+	<p class="p-empty" role="status" hidden>{t("No results. Try a page or project name.", "Nessun risultato. Prova il nome di una pagina o di un progetto.")}</p>
 </dialog>

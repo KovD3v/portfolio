@@ -900,12 +900,18 @@ button.link:hover { color: var(--accent); }
 }
 .palette::backdrop { background: color-mix(in srgb, var(--bg) 70%, transparent); }
 .palette:focus-visible { outline: none; }
+.palette [hidden] { display: none !important; }
+.p-search { display: flex; align-items: center; border-bottom: var(--hair); }
+.p-search form { flex: none; }
+.p-close { width: 44px; height: 44px; border: 0; background: none; color: var(--fg-2); font: 24px var(--sans); cursor: pointer; }
+.p-close:hover { color: var(--fg); }
+.p-close:focus-visible { outline: 2px solid var(--accent); outline-offset: -5px; }
+.p-empty { padding: var(--s-5) var(--s-4); color: var(--fg-2); }
 
 .palette input {
   all: unset; box-sizing: border-box; display: block;
-  width: 100%; padding: var(--s-3) var(--s-4);
+  width: 100%; min-width: 0; padding: var(--s-3) var(--s-4);
   font: 400 17px/1.5 var(--sans);
-  border-bottom: var(--hair);
 }
 .palette input::placeholder { color: var(--fg-3); }
 
@@ -918,6 +924,7 @@ button.link:hover { color: var(--accent); }
   position: relative; cursor: pointer;
   display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: var(--s-3);
   padding: var(--s-2) var(--s-4);
+  min-height: 44px;
 }
 .p-item[aria-selected="true"] { background: var(--bg-2); }
 .p-item[aria-selected="true"]::before {

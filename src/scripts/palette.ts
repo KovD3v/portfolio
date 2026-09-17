@@ -57,13 +57,14 @@ function refresh() {
 		);
 }
 
-function select(i: number) {
+function select(i: number, scroll = false) {
 	if (!input) return;
 	sel = Math.max(0, Math.min(visible.length - 1, i));
 	items.forEach((el) => el.setAttribute("aria-selected", "false"));
 	visible.forEach((el, k) => el.setAttribute("aria-selected", String(k === sel)));
 	if (visible[sel]) input.setAttribute("aria-activedescendant", visible[sel].id);
 	else input.removeAttribute("aria-activedescendant");
+	if (scroll) visible[sel]?.scrollIntoView({ block: "nearest" });
 }
 
 function filter() {
@@ -79,10 +80,13 @@ function filter() {
 		.sort((a, b) => b.s - a.s)
 		.map((x) => x.el);
 	if (q) visible.forEach((el, k) => (el.style.order = String(k)));
-	else items.forEach((el, i) => (el.id = `p-opt-${i}`));
+	else items.forEach((el) => el.style.removeProperty("order"));
 	for (const g of list.querySelectorAll<HTMLElement>(".p-group"))
 		g.hidden = !g.querySelector('[role="option"]:not([hidden])');
 	list.classList.toggle("flat", !!q);
+	const empty = dlg?.querySelector<HTMLElement>(".p-empty");
+	if (empty) empty.hidden = visible.length > 0;
+	list.scrollTop = 0;
 	select(0);
 }
 
@@ -114,6 +118,7 @@ export function initPalette() {
 	input = nextInput;
 	list = nextList;
 	items = Array.from(dlg.querySelectorAll<HTMLElement>('[role="option"]'));
+	items.forEach((el, i) => (el.id = `p-opt-${i}`));
 	for (const el of items) {
 		el.addEventListener("mousemove", () => {
 			const k = visible.indexOf(el);
@@ -125,10 +130,10 @@ export function initPalette() {
 	nextInput.addEventListener("keydown", (e) => {
 		if (e.key === "ArrowDown") {
 			e.preventDefault();
-			select(sel + 1);
+			select(sel + 1, true);
 		} else if (e.key === "ArrowUp") {
 			e.preventDefault();
-			select(sel - 1);
+			select(sel - 1, true);
 		} else if (e.key === "Enter") {
 			e.preventDefault();
 			if (visible[sel]) run(visible[sel]);
