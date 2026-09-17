@@ -203,8 +203,8 @@ function draw() {
     sourceCtx.restore();
   } else drawArtwork(sourceCtx,state.subject,phase,state.render);
   const pixels = sourceCtx.getImageData(0,0,480,480).data;
-  const small = w < 500, size = state.focus ? Math.min(w,420) : small ? 240 : 310;
-  const left = state.focus ? (w-size)/2 : w*(small ? .7 : .79)-size/2, top = state.focus ? (h-size)/2 : small ? 3 : 0;
+  const small = matchMedia("(max-width: 700px)").matches, size = state.focus ? Math.min(w,420) : small ? 128 : 310;
+  const left = state.focus ? (w-size)/2 : small ? w-size : w*.79-size/2, top = state.focus ? (h-size)/2 : 0;
   const step = state.render === "characters" ? 7 : state.render === "dither" ? 2.4 : 5;
   const masks=state.focus ? [] : textRects(rect);
   for(let y=0,row=0;y<size;y+=step,row++)for(let x=0,col=0;x<size;x+=step,col++) {

@@ -1,5 +1,4 @@
 import { toggleTheme, current } from "./theme";
-import { toggle as toggleSound, enabled, click } from "./sound";
 import { copyEmail } from "./email";
 
 const dlg = document.querySelector<HTMLDialogElement>("#palette");
@@ -20,9 +19,10 @@ function score(q: string, s: string) {
 	return sc;
 }
 
-export function openPalette() {
+export function openPalette(animate = false) {
 	if (dlg && input && !dlg.open) {
 		refresh();
+		dlg.toggleAttribute("data-animate", animate);
 		dlg.showModal();
 		input.value = "";
 		filter();
@@ -42,8 +42,6 @@ function refresh() {
 	if (!dlg) return;
 	const t = dlg.querySelector<HTMLElement>('[data-action="theme"] .p-label');
 	if (t) t.textContent = document.documentElement.lang === "it" ? `tema → ${current() === "oled" ? "chiaro" : "scuro"}` : `theme → ${current() === "oled" ? "light" : "oled"}`;
-	const s = dlg.querySelector<HTMLElement>('[data-action="sound"] .p-label');
-	if (s) s.textContent = document.documentElement.lang === "it" ? `suoni → ${enabled() ? "disattiva" : "attiva"}` : `sound → ${enabled() ? "off" : "on"}`;
 	let scene = "lorenz";
 	try {
 		scene = localStorage.getItem("field") ?? "lorenz";
@@ -83,6 +81,8 @@ function filter() {
 	for (const g of list.querySelectorAll<HTMLElement>(".p-group"))
 		g.hidden = !g.querySelector('[role="option"]:not([hidden])');
 	list.classList.toggle("flat", !!q);
+	const empty = dlg?.querySelector<HTMLElement>(".p-empty");
+	if (empty) empty.hidden = visible.length > 0;
 	select(0);
 }
 
@@ -94,7 +94,6 @@ async function run(el: HTMLElement) {
 		return;
 	}
 	if (action === "theme") toggleTheme();
-	else if (action === "sound") toggleSound();
 	else if (action === "email") await copyEmail();
 	else if (action?.startsWith("field:")) {
 		const scene = action.slice(6);
@@ -137,12 +136,6 @@ export function initPalette() {
 	dlg.addEventListener("click", (e) => {
 		if (e.target === dlg) closePalette();
 	}); // backdrop
-	dlg.addEventListener("close", click);
-	const origShow = dlg.showModal.bind(dlg);
-	dlg.showModal = () => {
-		origShow();
-		click();
-	};
 	for (const b of document.querySelectorAll("[data-open-palette]"))
-		b.addEventListener("click", openPalette);
+		b.addEventListener("click", (e) => openPalette((e as MouseEvent).detail > 0));
 }

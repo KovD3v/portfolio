@@ -61,7 +61,6 @@ const groups = Astro.props.groups ?? [
 		kind: t("action", "azione"),
 		items: [
 			{ label: t("theme", "tema"), action: "theme" },
-			{ label: t("sound", "suoni"), action: "sound" },
 			{ label: t("copy email", "copia email"), action: "email" },
 			...(["/old", "/lab/field"].includes(Astro.url.pathname) ? scenes : []).map((s) => ({
 				label: `field: ${s}`,
@@ -110,4 +109,5 @@ const groups = Astro.props.groups ?? [
 				))
 		}
 	</div>
+	<p class="p-empty" role="status" hidden>{t("No results. Try another search term.", "Nessun risultato. Prova un altro termine.")}</p>
 </dialog>

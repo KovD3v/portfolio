@@ -1,0 +1,49 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "(?<subdomain>.+)\\.kovd3v\\.me"
+        }
+      ],
+      "destination": "https://:subdomain.kovdev.me/",
+      "permanent": true
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "kovd3v\\.me"
+        }
+      ],
+      "destination": "https://kovdev.me/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "(?<subdomain>.+)\\.kovd3v\\.me"
+        }
+      ],
+      "destination": "https://:subdomain.kovdev.me/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "kovd3v\\.me"
+        }
+      ],
+      "destination": "https://kovdev.me/:path*",
+      "permanent": true
+    }
+  ]
+}
