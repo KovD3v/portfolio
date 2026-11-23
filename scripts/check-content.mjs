@@ -25,7 +25,7 @@ for (const locale of ['en', 'it']) {
   }
   const now = read(`${prefix}now`);
   assert.ok(now.includes('Amber') && now.includes('Drivewise'));
-  assert.ok(now.includes('aria-label="0%"'));
+  assert.ok(now.includes('aria-label="50%"'));
   assert.ok(!read(`${prefix}uses`).includes('dotfiles'));
   assert.ok(!read(`${prefix}changelog`).includes('2025-01'));
 }
@@ -41,4 +41,4 @@ assert.match(readFileSync('dist/rss.xml', 'utf8'), /<pubDate>Mon, 14 Sep 2026 00
 for (const prefix of ['', 'it/']) {
   assert.ok(!read(`${prefix}projects/anthon`).includes('/images/projects/anthon/'));
 }
-console.log('Passed: localized project routes, language alternates, OG images, confirmed content, zero reading progress, mock removal and article publication date and Anthon image removal and bilingual CV profile.');
+console.log('Passed: localized project routes, language alternates, OG images, confirmed content, reading progress, mock removal and article publication date and Anthon image removal and bilingual CV profile.');

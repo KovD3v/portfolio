@@ -32,11 +32,11 @@
 		],
 		[
 			"editor",
-			"Neovim, VSCode"
+			"T3 Code, VSCode"
 		],
 		[
 			"terminal",
-			"Ghostty + tmux"
+			"Ghostty"
 		],
 		[
 			"shell",
