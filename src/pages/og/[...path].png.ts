@@ -67,7 +67,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 				`lab/${e.id}`,
 				e.data.title,
 				"lab",
-				`${e.data.status} · ${fmtMonth(e.data.touched)}`,
+				[e.data.status, fmtMonth(e.data.touched)].filter(Boolean).join(" · "),
 			),
 		),
     ];
@@ -121,7 +121,7 @@ const h = (
 let fonts: { name: string; data: ArrayBuffer; weight: 400 | 500 }[] | null =
 	null;
 
-export const GET: APIRoute = async ({ props }) => {
+export const GET: APIRoute = async ({ props, params }) => {
 	fonts ??= [
 		{
 			name: "sans",
@@ -236,7 +236,7 @@ export const GET: APIRoute = async ({ props }) => {
 							borderBottom: `1px solid ${C.line}`,
 						},
 						[
-							h("div", { ...mono, width: 160 }, "site"),
+							h("div", { ...mono, width: 160 }, params.path?.startsWith("it/") ? "sito" : "site"),
 							h("div", { ...mono, color: C.fg }, SITE),
 						],
 					),
