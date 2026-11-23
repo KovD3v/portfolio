@@ -11,7 +11,6 @@ export const current = (): Theme =>
 function render() {
 	const oled = current() === "oled";
 	for (const b of document.querySelectorAll<HTMLButtonElement>(".theme")) {
-		b.setAttribute("aria-pressed", String(oled));
 		b.setAttribute("aria-label", document.documentElement.lang === "it" ? `Passa al tema ${oled ? "chiaro" : "scuro"}` : `Switch to ${oled ? "light" : root.dataset.dark === "warm" ? "warm dark" : "OLED"} theme`);
 	}
 }

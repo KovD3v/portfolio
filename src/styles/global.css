@@ -781,10 +781,6 @@ main { isolation: isolate; }
   pointer-events: none;
   view-transition-name: progress;
 }
-@supports (animation-timeline: scroll()) {
-  .progress { animation: progress linear both; animation-timeline: scroll(root); }
-  @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-}
 
 /* ───────────────────────── note page ────────────────────── */
 

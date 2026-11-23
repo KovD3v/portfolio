@@ -11,11 +11,11 @@ const notes = await getNotes();
 
 <Base
 	title={`${t("Notes", "Appunti")} — ${site.name}`}
-	description={t("Short writeups on systems, Linux, and things that broke.", "Appunti su ciò che studio e imparo.")}>
+	description={t("Notes on what I study and learn.", "Appunti su ciò che studio e imparo.")}>
 	<a class="back" href={href("/")} >{t("home", "inizio")}</a>
 	<h1 class="page-title">{t("Notes", "Appunti")}</h1>
 	<p class="lead">
-		{t("Short writeups on what I'm learning \u2014 mostly systems, mostly things that\n\t\tbroke first. Each one carries a status: seedling, growing, or evergreen.", "Appunti su ciò che sto imparando. Gli articoli disponibili solo in inglese si aprono nella sezione inglese.")}
+		{t("Notes on what I'm learning. Each one carries a status: seedling, growing, or evergreen.", "Appunti su ciò che sto imparando. Gli articoli disponibili solo in inglese si aprono nella sezione inglese.")}
 	</p>
 	<div class="rows enter" style="--i: 1">
 		{

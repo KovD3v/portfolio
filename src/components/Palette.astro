@@ -17,7 +17,7 @@ const [notes, projects, lab] = await Promise.all([
 
 const pages = [
 	[t("home", "inizio"), "/"],
-	[t("profile", "profilo"), "/about"],
+	[t("profile", "profilo"), "/about", "about"],
 	[t("notes", "appunti"), "/notes"],
 	[t("projects", "progetti"), "/projects"],
 	["lab", "/lab"],
@@ -33,7 +33,7 @@ const groups = Astro.props.groups ?? [
 	{
 		name: t("pages", "pagine"),
 		kind: t("page", "pagina"),
-		items: pages.map(([l, h]) => ({ label: l, href: href(h) })),
+		items: pages.map(([l, h, k]) => ({ label: l, href: href(h), keywords: k })),
 	},
 	{
 		name: t("notes", "appunti"),
@@ -60,7 +60,7 @@ const groups = Astro.props.groups ?? [
 		name: t("actions", "azioni"),
 		kind: t("action", "azione"),
 		items: [
-			{ label: t("theme", "tema"), action: "theme" },
+			{ label: t("theme", "tema"), action: "theme", keywords: t("dark light", "scuro chiaro") },
 			{ label: t("copy email", "copia email"), action: "email" },
 			...(["/old", "/lab/field"].includes(Astro.url.pathname) ? scenes : []).map((s) => ({
 				label: `field: ${s}`,
@@ -102,7 +102,7 @@ const groups = Astro.props.groups ?? [
 								role="option"
 								class="p-item"
 								aria-label={i.label}
-								data-text={i.label}
+								data-text={"keywords" in i && i.keywords ? `${i.label} ${i.keywords}` : i.label}
 								data-href={"href" in i ? i.href : undefined}
 								data-action={
 									"action" in i ? i.action : undefined

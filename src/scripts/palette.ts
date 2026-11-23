@@ -41,7 +41,7 @@ let input: HTMLInputElement | null = null,
 function refresh() {
 	if (!dlg) return;
 	const t = dlg.querySelector<HTMLElement>('[data-action="theme"] .p-label');
-	if (t) t.textContent = document.documentElement.lang === "it" ? `tema → ${current() === "oled" ? "chiaro" : "scuro"}` : `theme → ${current() === "oled" ? "light" : "oled"}`;
+	if (t) t.textContent = document.documentElement.lang === "it" ? `tema → ${current() === "oled" ? "chiaro" : "scuro"}` : `theme → ${current() === "oled" ? "light" : "dark"}`;
 	let scene = "lorenz";
 	try {
 		scene = localStorage.getItem("field") ?? "lorenz";

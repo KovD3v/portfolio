@@ -37,7 +37,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	const english = [
 		p("home", site.name, "computer engineering", "projects · notes · lab"),
 		p("about", "Profile", "Tommaso Coviello", "education · experience · projects"),
-		p("notes", "Notes", "index", `${notes.length} notes`),
+		p("notes", "Notes", "index", `${notes.length} ${notes.length === 1 ? "note" : "notes"}`),
 		p("projects", "Projects", "index", `${projects.length} projects`),
 		p("lab/ascii", "ASCII lab", "lab", "interactive studies"),
 		p("lab/texture", "Texture lab", "lab", "grain · fibers · folds"),

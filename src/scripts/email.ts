@@ -7,9 +7,10 @@ export async function copyEmail() {
 	try {
 		await navigator.clipboard.writeText(addr);
 		if (el) {
+			const label = (el.dataset.label ??= el.textContent ?? "");
 			clearTimeout(resetTimer);
 			el.textContent = document.documentElement.lang === "it" ? "copiata" : "copied";
-			resetTimer = setTimeout(() => (el.textContent = "email"), 1500);
+			resetTimer = setTimeout(() => (el.textContent = label), 1500);
 		}
 		return true;
 	} catch {

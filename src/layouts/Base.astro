@@ -71,14 +71,14 @@ const og = new URL(`/og/${locale === "it" ? "it/" : ""}${path}.png`, Astro.site)
 	<body>
 		<div id="v3-paper" aria-hidden="true"></div>
 		<a class="skip" href="#main">{t("Skip to content", "Vai al contenuto")}</a>
-		<aside class="v3-preview" aria-label={t("Site controls", "Controlli del sito")}>
+		<header class="v3-preview" aria-label={t("Site controls", "Controlli del sito")}>
 			<a class="v3-edition" href={href("/")} >{site.name}</a>
 			<div class="v3-preview-actions">
-                <a href={locale === "it" ? barePath : italianPath} lang={locale === "it" ? "en" : "it"} aria-label={t("Read in Italian", "Leggi in inglese")}>{t("Italiano", "English")}</a>
+                <a href={locale === "it" ? barePath : italianPath} lang={locale === "it" ? "en" : "it"} hreflang={locale === "it" ? "en" : "it"}>{t("Italiano", "English")}</a>
 				<button class="v3-menu" type="button" data-open-palette>menu</button>
-<button class="theme v3-theme" type="button" aria-label={t("Toggle theme", "Cambia tema")} aria-pressed="true"><span class="v3-theme-light">{t("Light", "Chiaro")}</span><span class="v3-theme-dark">{t("Dark", "Scuro")}</span></button>
+<button class="theme v3-theme" type="button" aria-label={t("Toggle theme", "Cambia tema")}><span class="v3-theme-light">{t("Light", "Chiaro")}</span><span class="v3-theme-dark">{t("Dark", "Scuro")}</span></button>
 			</div>
-		</aside>
+		</header>
 		{lab && <section class="v3-art-choices" aria-label={t("Choose an artwork", "Scegli uno studio")}>
 			<header class="v3-lab-heading"><h1>ASCII lab</h1><p>{t("Algorithms, mechanisms, and shapes in dots and characters. Choose a study and watch it work.", "Algoritmi, meccanismi e forme in punti e caratteri. Scegli uno studio e osservalo in movimento.")}</p></header>
 			<fieldset>

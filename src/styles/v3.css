@@ -79,7 +79,8 @@
 	.v3-footer { margin:10px 0 0 var(--v3-rail); border-top:1px solid var(--line); padding:18px 0 32px; display:flex; justify-content:space-between; align-items:center; gap:20px; }
 	.v3-footer nav { display:flex; gap:24px; }
 	.v3-footer a { font-size:13px; color:var(--fg-2); text-decoration:none; padding-block:10px; }
-	a:hover, .v3-menu:hover { color:var(--action); }
+	a:hover, .v3-menu:hover, .back:hover, .copy:hover, button.link:hover { color:var(--action); }
+	.palette input::placeholder { color:var(--fg-2); }
 	:focus-visible { outline:2px solid var(--action); outline-offset:4px; }
 	.skip { z-index:10; }
 	.palette { border-color:var(--line); }
