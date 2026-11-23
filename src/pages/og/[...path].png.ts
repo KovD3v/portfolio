@@ -83,7 +83,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
         p("it/lab/field", "Field", "lab", "sei scene in caratteri"),
         p("it/now", "Ora", "pagina", "letture · progetti · ora locale"),
         p("it/uses", "Strumenti", "pagina", "hardware · software · sito"),
-        p("it/changelog", "Aggiornamenti", "pagina", "in attesa della prima pubblicazione"),
+        p("it/changelog", "Aggiornamenti", "pagina", "una riga per ogni modifica"),
         p("it/404", "Pagina non trovata", "pagina", ""),
         ...italianProjects.map(project => p(`it/projects/${project.id.replace(/^it\//, "")}`, project.data.title, "progetto", `${project.data.stack.join(", ")} · ${project.data.year}`)),
     ];

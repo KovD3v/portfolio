@@ -21,8 +21,6 @@ const pages = [
 	[t("notes", "appunti"), "/notes"],
 	[t("projects", "progetti"), "/projects"],
 	["lab", "/lab"],
-	["ASCII lab", "/lab/ascii"],
-	["Texture lab", "/lab/texture"],
 	[t("now", "ora"), "/now"],
 	[t("uses", "strumenti"), "/uses"],
 	[t("changelog", "aggiornamenti"), "/changelog"],
@@ -54,7 +52,11 @@ const groups = Astro.props.groups ?? [
 	{
 		name: "lab",
 		kind: "lab",
-		items: lab.map((e) => ({ label: e.data.title, href: href(`/lab/${e.id}`) })),
+		items: [
+			...lab.map((e) => ({ label: e.data.title, href: href(`/lab/${e.id}`) })),
+			{ label: "ASCII lab", href: href("/lab/ascii") },
+			{ label: "Texture lab", href: href("/lab/texture") },
+		],
 	},
 	{
 		name: t("actions", "azioni"),

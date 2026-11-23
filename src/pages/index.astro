@@ -15,6 +15,7 @@ const [firstName, ...surname] = site.name.split(" ");
 					<h1>{firstName} <span class="v3-sketch-name">{surname.join(" ")}<svg class="v3-sketch v3-name-stroke" viewBox="0 0 112 13" aria-hidden="true"><path d="M3 8C25 5 52 9 76 6S99 5 109 6" /><path d="M9 11C30 8 49 10 68 9" opacity=".35" /></svg></span></h1>
                     <p>{t("I study computer and control engineering at Sapienza University of Rome. Here I collect the software I build and what I learn.", "Studio ingegneria informatica e automatica alla Sapienza. Qui raccolgo i software che costruisco e ciò che imparo.")}</p>
                     <p>{t("Outside programming, I ride horses.", "Fuori dalla programmazione, vado a cavallo.")}</p>
+                    <p>{t("I'm open to any kind of contact: ", "Sono disponibile per contatti di ogni tipo: ")}<a href={`mailto:${site.email}`}>{t("write to me", "scrivimi")}</a>.</p>
                     <p><a href={href("/about")}>{t("My background", "Il mio percorso")}</a></p>
 				</div>
 			</header>

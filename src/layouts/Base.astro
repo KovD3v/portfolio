@@ -27,7 +27,8 @@ const localizedSubjects = subjects.map(subject => ({ ...subject, name: t(subject
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const path = home ? "home" : Astro.url.pathname.replace(/^\/it(?=\/|$)/, "").replace(/^\/|\/$/g, "");
 const barePath = Astro.url.pathname.replace(/^\/it(?=\/|$)/, "") || "/";
-const italianPath = barePath.startsWith("/notes/") ? "/it/notes" : `/it${barePath === "/" ? "/" : barePath}`;
+const italianPath = `/it${barePath === "/" ? "/" : barePath}`;
+const englishOnly = /^\/notes\/[^/]+/.test(barePath); // single notes exist in English only
 const og = new URL(`/og/${locale === "it" ? "it/" : ""}${path}.png`, Astro.site);
 ---
 <!doctype html>
@@ -40,7 +41,7 @@ const og = new URL(`/og/${locale === "it" ? "it/" : ""}${path}.png`, Astro.site)
 		<meta name="theme-color" content="#141210" />
 		<title>{title}</title>
         <link rel="canonical" href={canonical} />
-        {!barePath.startsWith("/notes/") && <><link rel="alternate" hreflang="en" href={new URL(barePath, Astro.site)} /><link rel="alternate" hreflang="it" href={new URL(italianPath, Astro.site)} /></>}
+        {!englishOnly && <><link rel="alternate" hreflang="en" href={new URL(barePath, Astro.site)} /><link rel="alternate" hreflang="it" href={new URL(italianPath, Astro.site)} /></>}
         <meta property="og:type" content="website" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -74,7 +75,7 @@ const og = new URL(`/og/${locale === "it" ? "it/" : ""}${path}.png`, Astro.site)
 		<header class="v3-preview" aria-label={t("Site controls", "Controlli del sito")}>
 			<a class="v3-edition" href={href("/")} >{site.name}</a>
 			<div class="v3-preview-actions">
-                <a href={locale === "it" ? barePath : italianPath} lang={locale === "it" ? "en" : "it"} hreflang={locale === "it" ? "en" : "it"}>{t("Italiano", "English")}</a>
+                {!englishOnly && <a href={locale === "it" ? barePath : italianPath} lang={locale === "it" ? "en" : "it"} hreflang={locale === "it" ? "en" : "it"}>{t("Italiano", "English")}</a>}
 				<button class="v3-menu" type="button" data-open-palette>menu</button>
 <button class="theme v3-theme" type="button" aria-label={t("Toggle theme", "Cambia tema")}><span class="v3-theme-light">{t("Light", "Chiaro")}</span><span class="v3-theme-dark">{t("Dark", "Scuro")}</span></button>
 			</div>

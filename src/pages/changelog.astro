@@ -13,14 +13,14 @@ import { site } from "../data/site";
 	description={t("One line per change to this site.", "La cronologia delle modifiche a questo sito.")}>
 	<a class="back" href={href("/")} >{t("home", "inizio")}</a>
 	<h1 class="page-title">{t("Changelog", "Aggiornamenti")}</h1>
-	<p class="lead">{t("This site has not been published yet. Release notes will appear here after the first publication.", "Questo sito non è ancora stato pubblicato. La cronologia inizierà con la prima pubblicazione.")}</p>
+	<p class="lead">{t("One line per change to this site.", "Una riga per ogni modifica a questo sito.")}</p>
 	<dl class="plate enter" style="--i: 1">
 		{
-			(changelog as { date: string; text: string }[]).map((c) => (
+			(changelog as { date: string; text: string; it?: string }[]).map((c) => (
 				<div class="plate-row">
 					<>
 						<dt>{c.date}</dt>
-						<dd>{c.text}</dd>
+						<dd>{t(c.text, c.it ?? c.text)}</dd>
 					</>
 				</div>
 			))
