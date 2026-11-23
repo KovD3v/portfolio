@@ -16,8 +16,16 @@ Physic Engine è un progetto didattico in C. Sei demo esplorano caduta libera, m
 
 Ogni demo apre una finestra raylib con vettori, grafici temporali, cursori e configurazioni predefinite. Pausa, ripristino e velocità permettono di osservare come cambia la simulazione al variare dei parametri.
 
-## Struttura e ruolo
+## Struttura
 
-Il nucleo condiviso separa vettori, corpi, forze, integrazione e stato del mondo dalla rappresentazione grafica e dai controlli. Ogni simulazione ha un programma autonomo.
+Il nucleo condiviso separa vettori, corpi, forze, integrazione e stato del mondo dalla rappresentazione grafica e dai controlli. Ogni simulazione ha un programma autonomo, così i singoli modelli fisici restano accessibili accanto al codice riutilizzabile.
+
+## Decisioni tecniche
+
+Il passo di integrazione aggiorna prima la velocità e poi la posizione con la nuova velocità, perché l'energia della molla nella demo di azione e reazione resti limitata.
+
+Le frecce dei vettori di ogni corpo sono scalate insieme: la più lunga misura 80 pixel e le altre restano in proporzione.
+
+## Il mio ruolo
 
 Ho sviluppato il progetto da solo.

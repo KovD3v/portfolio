@@ -19,9 +19,15 @@ Le raccomandazioni usano punteggi deterministici su offerte del catalogo revisio
 
 I filtri sono negli URL, per condividere e ripristinare le ricerche. I test coprono API, catalogo, punteggi e percorsi del frontend.
 
+## Decisioni tecniche
+
+Il ranking ha un solo motore, Advisor v3. L'ho progettato per unire il motore dentro l'API, che tracciava le offerte esatte e la provenienza dei dati, con un pacchetto separato che aveva il modello di prodotto più ricco ma non era collegato all'applicazione. Usarli entrambi avrebbe creato due autorità per i punteggi e due modelli per le spiegazioni.
+
+Lo script delle migrazioni rifiuta le versioni duplicate, con un test che lo verifica.
+
 ## Stato attuale
 
-Il repository pubblico documenta una base funzionante dell'MVP. La raccolta automatica dal web e la ricerca vettoriale di produzione sono rimandate; la modalità vettoriale documentata usa embedding fittizi deterministici per sviluppo e test.
+Il repository include un agente avviato su richiesta che raccoglie i documenti sorgente; il suo risultato viene revisionato prima della pubblicazione. I provider di embedding reali e la ricerca vettoriale di produzione sono rimandati; la modalità vettoriale documentata usa embedding fittizi deterministici per sviluppo e test.
 
 ## Il mio ruolo
 

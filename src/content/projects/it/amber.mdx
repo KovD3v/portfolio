@@ -14,6 +14,12 @@ Amber è uno spazio di lavoro per la scrittura tecnica e lo studio. Markdown è 
 
 Gli appunti vivono in una normale cartella. I file sorgente restano autorevoli; indici e viste renderizzate derivano da essi. Scrittura, navigazione e artefatti riutilizzabili convivono mantenendo i documenti accessibili anche da altri strumenti.
 
+## Decisioni tecniche
+
+Amber non chiede all'utente di fidarsi di una cartella prima di eseguire TeX, perché una richiesta simile aggiunge attrito senza creare un vero confine. La sicurezza si basa su shell escape disattivato per impostazione predefinita, cartelle di lavoro isolate ed esecuzione limitata.
+
+Gli artefatti hanno identità e sorgente propri e si renderizzano in modo indipendente, e un appunto ne contiene i posizionamenti. Questo evita dipendenze nascoste dall'appunto che li contiene.
+
 ## Il mio ruolo
 
 Sviluppo Amber da solo. È uno dei progetti a cui sto lavorando in questo periodo, insieme a Drivewise.

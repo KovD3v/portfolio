@@ -22,6 +22,12 @@ Il codice viene salvato per esercizio in localStorage, con salvataggio automatic
 
 L'interprete supporta un sottoinsieme del C. I tester sono generati manualmente o tramite script e non sono test ufficiali DIAG. Gli esercizi senza tester vengono segnalati esplicitamente, così una copertura mancante non appare come un test superato.
 
+## Decisioni tecniche
+
+picoc-js non legge gli header come clang. Prima di ogni esecuzione il codice viene riscritto: `#pragma once` e l'include di `<stdbool.h>` vengono sostituiti, `bool` diventa `int` e i prototipi di `aux.h` vengono rimossi, perché alcuni mandavano in errore il parser dell'interprete. L'interprete gestisce male anche un valore di ritorno diverso da zero da `main`, quindi il tester comunica ogni risultato con righe marcatore nell'output invece che con il codice di uscita.
+
+Il repository conserva un secondo runner che compila con clang su un server locale, per gli esercizi con file di supporto troppo complessi per l'interprete. Sul sito pubblicato è disattivato.
+
 ## Il mio ruolo
 
 Ho sviluppato il progetto da solo.

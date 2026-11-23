@@ -20,6 +20,12 @@ Each demo opens a raylib window with vector arrows, time-series graphs, sliders,
 
 A shared core separates vectors, bodies, forces, integration, and world state from rendering and controls. Each simulation has its own program entry point, making the individual physical models accessible alongside the reusable code.
 
+## Technical decisions
+
+The integration step updates velocity first and then position with the new velocity, so that the spring in the action and reaction demo keeps its energy bounded.
+
+Each body's vector arrows are scaled together: the longest measures 80 pixels and the others keep their proportion to it.
+
 ## My role
 
 I developed this project independently.

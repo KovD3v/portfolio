@@ -14,6 +14,12 @@ Amber is a workspace for technical writing and study. Markdown is the starting p
 
 Notes live in an ordinary folder. Source files remain authoritative; indexes and rendered views are derived from them. The workspace connects writing, navigation, and reusable artifacts while keeping documents accessible to other tools.
 
+## Technical decisions
+
+Amber does not ask the user to trust a folder before running TeX, because such a prompt adds friction without creating a real boundary. Safety relies on shell escape being off by default, isolated work directories, and bounded execution.
+
+Artifacts own their identity and source and render independently, and a note holds placements of them. This avoids hidden dependencies on the containing note.
+
 ## My role
 
 I develop Amber independently. It is one of the projects I am currently working on, alongside Drivewise.

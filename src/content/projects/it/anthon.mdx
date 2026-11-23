@@ -25,6 +25,16 @@ Lavoro ad Anthon dal 2025, nell'ambito di Sincro Group. Ho raccolto le esigenze 
 
 Ho sviluppato e pubblicato la prima versione, integrando modelli AI, consultazione dei documenti tramite RAG e gestione degli accessi.
 
+## Decisioni tecniche
+
+Ogni turno passa da una sola generazione del modello, e il server decide quali strumenti il modello può usare. Non c'è un classificatore per ogni richiesta, perché la chiamata di classificazione costava spesso più del lavoro che doveva risparmiare.
+
+L'elaborazione dei messaggi di Telegram e WhatsApp è ripetibile: una prenotazione a tempo nel database permette di riprendere il lavoro fallito quando il provider ritenta. I test su entrambi i webhook lo verificano.
+
+Nelle risposte vocali il testo arriva per primo in streaming, e l'audio segue attraverso la coda. Su cinque richieste misurate, il 95° percentile del tempo al primo blocco è sceso da 5.060 ms a 3.717 ms.
+
+I modelli vengono scelti con un benchmark basato su conversazioni a più turni, che rappresenta il prodotto meglio dei casi isolati con strumenti simulati.
+
 ## Il mio ruolo
 
 Sono uno dei tre soci e il responsabile prodotto e sviluppo. Oggi guido Anthon 2.0, ne definisco le priorità e coordino rilasci e beta testing. Raccolgo le segnalazioni, verifico le correzioni e mi confronto con il team sui requisiti e sulla privacy delle conversazioni.

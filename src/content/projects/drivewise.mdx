@@ -19,9 +19,15 @@ The recommendation flow uses deterministic scoring over reviewed catalog offers.
 
 Filters live in page URLs, so searches and filtered lists can be shared and restored through browser navigation. Tests cover API behavior, catalog handling, scoring, and frontend routes.
 
+## Technical decisions
+
+Ranking has a single engine, Advisor v3. I designed it to combine the engine inside the API, which tracked exact offers and the provenance of its data, with a separate package that had the richer product model but was not connected to the app. Ranking with both would have created two authorities for scores and two models for explanations.
+
+The migration runner rejects duplicate versions, with a test that covers it.
+
 ## Current scope
 
-The public repository documents a working MVP foundation. Live crawling and production vector search are deferred; the documented vector mode uses deterministic fake embeddings for development and testing.
+The repository includes an on-demand agent that collects source documents; its output is reviewed before publication. Real embedding providers and production vector search are deferred; the documented vector mode uses deterministic fake embeddings for development and testing.
 
 ## My role
 

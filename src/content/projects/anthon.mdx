@@ -25,6 +25,16 @@ I have worked on Anthon since 2025, within Sincro Group. I gathered the client's
 
 I developed and published the first version, integrating AI models, document retrieval through RAG, and access management.
 
+## Technical decisions
+
+Every turn goes through one model generation, and the server decides which tools the model may use. There is no per-request classifier, because the classification round trip often cost more than the work it was meant to save.
+
+Inbound Telegram and WhatsApp processing is retryable: a time-limited claim in the database lets failed work be picked up again when the provider retries. Tests on both webhook routes cover it.
+
+Voice-first replies stream their text first, and the audio follows through the queue. Across five measured requests, the 95th-percentile time to the first chunk went from 5,060 ms to 3,717 ms.
+
+Models are chosen with a benchmark built on multi-turn conversations, which represents the product more closely than isolated cases with mock tools.
+
 ## My role
 
 I am one of three co-founders and lead product and development. I now guide Anthon 2.0, set its priorities, and coordinate releases and beta testing. That includes collecting reports, verifying fixes, and discussing requirements and conversation privacy with the team.
